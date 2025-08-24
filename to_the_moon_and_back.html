@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You and Me Flipbook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-size: 10px;
+    }
+
+    .book {
+      perspective: 2000px;
+      width: 90vw;
+      max-width: 1000px;
+      aspect-ratio: 2 / 1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .page {
+      width: 50%;
+      height: 100%;
+      background: white;
+      position: absolute;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      transform-style: preserve-3d;
+      transition: transform 1s ease-in-out;
+      transform-origin: left center;
+    }
+
+    .left-page { left: 0; visibility: hidden; }
+    .right-page { left: 50%; }
+
+    .page-front, .page-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      backface-visibility: hidden;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .page-back { transform: rotateY(180deg); }
+    .flipped { transform: rotateY(-180deg); }
+
+    .page-content {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+	
+	
+	.book { font-size: clamp(12px, 1.8vmin, 15px); }
+
+		/* 2) Let text use that scale (no hard px) */
+		.text-block.active { 
+		  font-size: 1em;          /* inherits from .book */
+		  line-height: 1.45;       /* a bit tighter than 1.6 to save height */
+		}
+		.overlay-text { 
+		  font-size: 1em;       /* slightly larger heading-style overlay */
+		}
+
+		/* 3) Extra tuning for very small screens */
+		@media (max-width: 480px) {
+		  .book { font-size: clamp(11px, 1.5vmin, 16px); }
+		  .text-block.active { line-height: 1.35; }  /* tighter on phones */
+		}
+
+		/* 4) Short viewports (mobile landscape, small laptops) */
+		@media (max-height: 560px) {
+		  .book { font-size: clamp(11px, 1.4vmin, 16px); }
+		}
+
+    .page-content.text-overlay {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: transparent;
+      position: relative;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+	
+	.page-content.text-overlay .text-block p {
+		margin:2px;                 /* removes the big top/bottom gap */
+	}
+
+    .overlay-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: none;
+      padding: 0;
+      background-color: transparent;
+      line-height: 1.6;
+      border-radius: 8px;
+    }
+
+    .sentence {
+      transition: background-color 0.3s ease;
+      padding: 2px 4px;
+    }
+
+    .sentence.active {
+      background: #ffeb3b;
+    }
+
+    .page-content.full-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+	
+	.text-block {
+	  display: none;
+	  width: 100%;
+	  line-height: 1.6;
+	}
+
+	.text-block.active {
+	  display: block;
+	  position: absolute;
+      top: 1%;
+      left: 50%;
+	  transform: translateX(-50%);  /* only center horizontally */
+      width: 90%;
+      max-width: none;
+      padding: 3px;
+      background-color: transparent;
+      line-height: 1.6;
+      border-radius: 2px;
+		}
+				
+			
+		/* Base style */
+		.controls{
+		  position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
+		  display:flex; align-items:center; gap:8px;
+		  padding:8px 12px; border-radius:9999px; z-index:2147483647;
+		  background:rgba(0,0,0,.45); color:#fff; backdrop-filter:blur(6px);
+		  font-size:14px; user-select:none;
+		  /* auto-hide defaults */
+		  opacity:0; pointer-events:none;
+		  transform:translate(-50%, 8px);  /* slight slide down when hidden */
+		  transition:opacity .25s ease, transform .25s ease;
+		}
+		.controls button{
+		  border:0; background:transparent; color:inherit; cursor:pointer;
+		  padding:6px 10px; border-radius:999px; font-size:16px;
+		}
+		.controls button:hover{ background:rgba(255,255,255,.15); }
+		.controls input[type="range"]{ width:280px; }
+
+		/* Visible state */
+		.controls.is-visible{
+		  opacity:1; pointer-events:auto;
+		  transform:translate(-50%, 0);
+		}
+
+		/* (Optional) small screens tweak */
+		@media (max-width: 480px){
+		  .controls input[type="range"]{ width:200px; }
+		}
+
+		.page-content.full-image {
+		  position: relative;
+		}
+
+		.page-content.full-image img {
+		  width: 100%;
+		  height: 100%;
+		  object-fit: cover;
+		  display: block;
+		  /* We define the transition properties here, but not the duration. */
+		  transition-property: opacity;
+		  transition-timing-function: ease-in-out;
+		}
+
+		/* This class sets the opacity and a longer duration for the fade-out. */
+		.page-content.full-image img.fading {
+		  opacity: 0;
+		  transition-duration: 1.5s;
+		}
+
+		/* This class sets the opacity and also a longer duration for the fade-in. */
+		.page-content.full-image img.visible {
+		  opacity: 1;
+		  transition-duration: 1.5s;
+		}
+		   #cover { z-index: 100; }
+		#page1_2 { z-index: 99; }
+		#page3_4 { z-index: 98; }
+		#page5_6 { z-index: 97; }
+		#page7_8 { z-index: 96; }
+		#page9_10 { z-index: 95; }
+		#page11_12 { z-index: 94; }
+		#page13_14 { z-index: 93; }
+		#page15_16 { z-index: 92; }
+		#page17_18 { z-index: 91; }
+		#page19_20 { z-index: 90; }
+		#page21_22 { z-index: 89; }
+		#page23_24 { z-index: 88; }
+		#page25_26 { z-index: 87; }
+		#page27_28 { z-index: 86; }
+		#page29_30 { z-index: 85; }
+		#page31_32 { z-index: 84; }
+
+
+  </style>
+</head>
+
+<body>
+  <div class="book">
+    <div class="page left-page" id="insideCover">
+      <div class="page-front">
+        <div class="page-content">
+          <p>This is the inside cover.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page right-page" id="cover">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_cover.webp">
+        </div>
+      </div>
+      <div class="page-back">
+        <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_1.webp')">
+					  <div class="text-block active" id="textBlock1">
+			  <p>
+				<span class="sentence" data-start="6.00" data-end="9.89">Pitter-patter, tup tup tup!</span><br>
+				<span class="sentence" data-start="10.00" data-end="13.00">Pitter-patter, pitter-patter, pitter-patter—tup tup!</span><br>
+				<span class="sentence" data-start="13.89" data-end="17.23">The raindrops were playing music on the roof.</span><br><br>
+				<span class="sentence" data-start="17.79" data-end="18.89">Mini jumped out of bed</span>
+				<span class="sentence" data-start="19.50" data-end="21.19">like a frog on a trampoline.</span><br>
+				<span class="sentence" data-start="21.99" data-end="25.51">She started bouncing up and down with joy.</span><br>
+				<span class="sentence" data-start="26.49" data-end="27.41">Yippee!</span>
+				<span class="sentence" data-start="27.81" data-end="30.99">The rain is here!</span><br>	  </p>
+		</div>
+
+			<div class="text-block" id="textBlock2">
+			  <p>
+				<span class="sentence" data-start="32.37" data-end="34.47">She dashed to the porch</span>
+				<span class="sentence" data-start="35.0" data-end="36.87">and gazed at the beautiful scene.</span><br>
+				<span class="sentence" data-start="37.55" data-end="39.85">The streets were shining like mirrors,</span><br>
+				<span class="sentence" data-start="40.45" data-end="43.35">Puddles twinkled like tiny lakes...!</span><br>
+				<span class="sentence" data-start="43.91" data-end="46.35">The trees twirled in the wind,</span><br>
+				<span class="sentence" data-start="46.79" data-end="49.79">And the clouds looked like creamy cupcakes...!</span><br>
+			</p>
+			</div>
+			<div class="text-block" id="textBlock3">
+			  <p>
+				<span class="sentence" data-start="50.83" data-end="52.43">Mini&#x27;s eyes lip up.</span><br>
+				<span class="sentence" data-start="53.13" data-end="53.45">Oh!</span>
+				<span class="sentence" data-start="54.63" data-end="58.49">I so want to float paper boats in those puddles!</span><br>
+				<span class="sentence" data-start="59.13" data-end="61.97">Papa! She called out.</span><br>
+			</p>
+			</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page right-page" id="page1_2">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_2.webp">
+        </div>
+      </div>
+      <div class="page-back">
+        <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_3.webp')">
+			<div class="text-block active" id="textBlock4">
+			  <p>
+			<span class="sentence" data-start="63.09" data-end="65.65">Papa had just shut his laptop.</span>
+			<span class="sentence" data-start="66.45" data-end="67.99">He peeked out of the window.</span><br>
+			<span class="sentence" data-start="68.77" data-end="71.49">Yes, my little one, what is it?</span><br><br>
+			<span class="sentence" data-start="72.17" data-end="73.39">Papa! Papa! Papa!</span><br>
+			<span class="sentence" data-start="73.69" data-end="76.15">Can you make some paper boats for me?</span><br>
+			<span class="sentence" data-start="77.33" data-end="79.61">Of course, why not?</span><br>
+			<span class="sentence" data-start="80.23" data-end="81.75">How many do you have in mind?</span><br>
+			<span class="sentence" data-start="82.43" data-end="87.25">Five—no, eight—wait… TEN! </span><br>
+			<span class="sentence" data-start="87.49" data-end="89.29">Ten big boats, Papa!</span><br>
+			<span class="sentence" data-start="90.39" data-end="91.69">Aye aye, Captain Mini!</span><br>
+			<span class="sentence" data-start="92.13" data-end="94.75">You&#x27;ll have ten boats coming right up!</span>
+			<span class="sentence" data-start="95.01" data-end="96.09">Papa winked.</span><br>		
+			</div>
+			<div class="text-block " id="textBlock5">
+			  <p>
+					<span class="sentence" data-start="96.75" data-end="99.77">Mini clapped and spun like a happy top.</span><br>
+					<span class="sentence" data-start="100.39" data-end="101.75">"Papa is making boats!</span><br>
+					<span class="sentence" data-start="101.85" data-end="103.15">Papa is making boats!</span><br>
+					<span class="sentence" data-start="103.51" data-end="105.53">I am gonna float some boats!</span><br>
+					<span class="sentence" data-start="106.81" data-end="107.93">Yoo-hoo! Bada maja ane wala hai!!”</span><br><br>
+					<span class="sentence" data-start="110.53" data-end="114.41">The rain began to drum a little louder on the roof.</span><br>
+					<span class="sentence" data-start="115.15" data-end="118.95">And the wet earth started to smell like magic...</span><br>
+			</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page right-page" id="page3_4">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_4.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_17.webp')">
+          	<div class="text-block active" id="textBlock6">
+			<p>
+			<span class="sentence" data-start="123.9" data-end="126.94">Outside, Mama hurried along the clothesline.</span><br>
+			<span class="sentence" data-start="130.08" data-end="131.08">Grab that shirt!</span>
+			<span class="sentence" data-start="131.76" data-end="133.04">Grab this sock!</span><br>
+			<span class="sentence" data-start="133.72" data-end="134.76">Grab those trousers!</span>
+			<span class="sentence" data-start="135.64" data-end="136.7">Grab that frock!</span><br><br>
+			<span class="sentence" data-start="140.16" data-end="143.94">She gathered all the clothes and hurried to the porch.</span><br>
+			</p>
+			</div>
+			<div class="text-block " id="textBlock7">
+			<p>
+			<span class="sentence" data-start="144.5" data-end="145.22">Phew!</span>
+			<span class="sentence" data-start="145.84" data-end="147.9">She dropped the bundle on the chair, </span><br>
+			<span class="sentence" data-start="148.0" data-end="149.46">and leaned against the pillar.</span><br><br>
+			<span class="sentence" data-start="150.12" data-end="152.52">And just then— Plink! Plink!</span><br>
+			</p>
+			</div>
+			<div class="text-block " id="textBlock8">
+			<p>
+			<span class="sentence" data-start="153.26" data-end="156.88">Two cheeky little raindrops sneaked through the roof</span>
+			<span class="sentence" data-start="156.88" data-end="160.08">and splashed right onto Mama&#x27;s shoulder.</span><br><br>
+			<span class="sentence" data-start="160.58" data-end="163.1">“Ouuuuiiiieee!” She squealed.</span><br>
+			<span class="sentence" data-start="163.6" data-end="166.4">She looked up and rolled her eyes.</span><br>
+			<span class="sentence" data-start="166.4" data-end="167.76">Oh no!</span>
+			<span class="sentence" data-start="168.14" data-end="170.34">The roof is leaking again!</span><br><br>
+			<span class="sentence" data-start="170.7" data-end="171.63">Mini, quick!</span>
+			<span class="sentence" data-start="172.38" data-end="174.54">Bring those little buckets from under the stairs!</span><br>
+	</p>
+			</div>
+        </div>
+    </div>
+    </div>
+  
+  <div class="page right-page" id="page5_6">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_5.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_7.webp')">
+          <div class="text-block active" id="textBlock9">
+			<p>
+				<span class="sentence" data-start="179.84" data-end="181.94">Mini dashed inside and came back </span>
+				<span class="sentence" data-start="182.04" data-end="185.02">with a bunch of small, colourful buckets.</span><br><br>
+				<span class="sentence" data-start="185.78" data-end="187.78">“Here, Mama! Ye lo!”</span><br>
+				<span class="sentence" data-start="188.5" data-end="189.9">"Alright, alright - hurry!</span><br>
+				<span class="sentence" data-start="190.28" data-end="191.64">Let&#x27;s catch those drips!</span><br>
+				<span class="sentence" data-start="191.98" data-end="193.1">Place one bucket here...</span><br>
+				<span class="sentence" data-start="193.46" data-end="194.56">Place one over there...</span><br>
+				<span class="sentence" data-start="196.4" data-end="197.68">and place one right at the the corner dear!”</span><br><br>
+				<span class="sentence" data-start="199.4" data-end="210.68">Drip... drip... drip! Plop. Plop. Plop! </span><br>
+				<span class="sentence" data-start="211.4" data-end="219.68">Drip...Plop. drip...Plop...drip...Plop!</span><br><br>
+				<span class="sentence" data-start="220.18" data-end="223.66">The rain began to play a bouncy beat in the buckets.</span><br>
+				
+			</p>
+			</div>
+			<div class="text-block " id="textBlock10">
+			<p>
+				<span class="sentence" data-start="224.34" data-end="225.48">Mini&#x27;s eyes sparkled.</span>
+				<span class="sentence" data-start="226.36" data-end="229.12">Mama, when these buckets fill up,</span>
+				<span class="sentence" data-start="229.62" data-end="233.14">they&#x27;ll be like tiny swimming pools for ants!</span><br>
+				<span class="sentence" data-start="233.76" data-end="235.74">Mama laughed out loud.</span><br>
+				<span class="sentence" data-start="236.84" data-end="239.1">Ants don&#x27;t swim, silly girl!</span><br><br>
+				<span class="sentence" data-start="239.64" data-end="241.38">Mini&#x27;s face fell for a moment.</span>
+				<span class="sentence" data-start="241.88" data-end="243.26">Her lips pouted.</span> 
+				<span class="sentence" data-start="243.8" data-end="244.16">Awwww!!!</span>
+			</p>
+			</div>	
+			<div class="text-block " id="textBlock11">
+			<p>
+				<span class="sentence" data-start="245.02" data-end="246.78">But then, ding!</span>
+				<span class="sentence" data-start="247.62" data-end="249.74">An idea popped into her head.</span>
+				<span class="sentence" data-start="250.5" data-end="252.48">Dimaag ki batti jhat se jali!</span><br><br>
+				<span class="sentence" data-start="252.48" data-end="255.399">She hurried to the end of the porch</span>
+				<span class="sentence" data-start="255.399" data-end="259.04">and came back with a handful of little basil leaves - </span><br>
+				<span class="sentence" data-start="260.1" data-end="262.5">Yani tulsi ke chote chote patte!</span><br><br>
+				<span class="sentence" data-start="262.8" data-end="265.76">She dropped one leaf into each bucket.</span><br>
+				<span class="sentence" data-start="266.36" data-end="268.72">Ta-da! Ant boats are here!</span>
+				<span class="sentence" data-start="269.46" data-end="270.32">Look at that, Mama!</span><br>
+				<span class="sentence" data-start="271.06" data-end="273.24">Ants don&#x27;t need to swim anymore!</span>
+				<span class="sentence" data-start="273.64" data-end="275.88">They can ride the tiny leaf boats!</span><br>
+				<span class="sentence" data-start="276.32" data-end="279.3">Mama chuckled and ruffled Mini&#x27;s hair.</span><br>
+				<span class="sentence" data-start="279.3" data-end="284.16">“You know, you’re one silly little girl...Zini-Mini!”</span><br>
+			</p>
+			</div>				
+		</div>
+    </div>
+    </div>
+
+	
+	 <div class="page right-page" id="page7_8">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_8.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_9.webp')">
+          <div class="text-block active" id="textBlock12">
+			<p>
+				<span class="sentence" data-start="291.04" data-end="294.08">SZZZZZZRRR! went something in the kitchen just then.</span><br>
+				<span class="sentence" data-start="294.58" data-end="296.58">Mini sniffed the air like a puppy.</span><br>
+				<span class="sentence" data-start="297.54" data-end="302.00">“Yummmmmm… what’s cooking?! kya pak raha hai udhar?”</span>
+				<span class="sentence" data-start="302.72" data-end="304.68">She dashed into the kitchen.</span><br><br>
+				<span class="sentence" data-start="305.46" data-end="308.56">“Papa! What&#x27;s that crunchy, munchy smell?"</span><br>
+				<span class="sentence" data-start="310.08" data-end="312.26">"Well, you tell me!"</span><br>
+				<span class="sentence" data-start="312.68" data-end="313.22">"Pakoras??"</span><br>
+				<span class="sentence" data-start="314.33" data-end="316.74">"Yes, pakoras it is!"</span><br>
+				<span class="sentence" data-start="317.16" data-end="319.3">“Ohhh! I LOVE pakoras!</span><br>
+				<span class="sentence" data-start="319.74" data-end="321.16">I love them so much!</span><br>
+				<span class="sentence" data-start="321.36" data-end="323.38">I love them so, so, so, so, so much!"</span><br>
+		</p>
+		  </div>
+		   <div class="text-block " id="textBlock13">
+			<p>
+				<span class="sentence" data-start="324.16" data-end="327.98">"Achha? Kitna hota hai yeh so, so, so much?"</span><br>
+				<span class="sentence" data-start="328.8" data-end="330.74">Mini threw her arms out wide.</span><br>
+				<span class="sentence" data-start="331.62" data-end="332.82">"This much!</span><br>
+				<span class="sentence" data-start="333.14" data-end="335.86">No, no, no, no, this much!</span><br>
+				<span class="sentence" data-start="336.66" data-end="340.5">Wait! THISSSSS much!"</span><br>
+				<span class="sentence" data-start="341.96" data-end="346.5">She stretched her hands so far, she almost toppled over.</span><br><br>
+				<span class="sentence" data-start="348.16" data-end="350.92">Oh, I love them all the way</span>
+				<span class="sentence" data-start="350.92" data-end="352.38">to the moon and back, Papa!</span><br>
+			</p>
+			</div>
+			</div>
+		</div>
+    </div>
+  
+  
+   <div class="page right-page" id="page9_10">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_10.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_7.webp')">
+           <div class="text-block active" id="textBlock14">
+			<p>
+					<span class="sentence" data-start="355.73" data-end="357.53">Mini tilted her head.</span><br>
+					<span class="sentence" data-start="358.23" data-end="362.47">But, Papa, how do you make pakoras so fast?</span><br>
+					<span class="sentence" data-start="363.07" data-end="365.89">Because, it&#x27;s just so easy to make them!</span>
+					<span class="sentence" data-start="366.45" data-end="367.37">Papa winked.</span><br><br>
+					<span class="sentence" data-start="373.37" data-end="375.13">You take a big bowl.</span>
+					<span class="sentence" data-start="377.43" data-end="378.89">Pour some flour.</span><br>
+					<span class="sentence" data-start="380.29" data-end="381.79">Sprinkle the spices.</span>
+					<span class="sentence" data-start="382.85" data-end="384.31">Don&#x27;t forget the salt.</span><br>
+					<span class="sentence" data-start="385.71" data-end="390.15">Then you go, mix, mix, mix, mix.</span><br><br>
+					<span class="sentence" data-start="390.91" data-end="392.27">Add a splash of water.</span>
+					<span class="sentence" data-start="393.61" data-end="399.25">Then, one more time, you go, mix, mix, mix, mix.</span><br>
+					</p>
+			</div>
+			<div class="text-block " id="textBlock15">
+			
+					<span class="sentence" data-start="400.37" data-end="402.63">Next, we slice the onions.</span>
+					<span class="sentence" data-start="403.03" data-end="403.93">Slice, slice, slice!</span><br>
+					<span class="sentence" data-start="405.83" data-end="410.79">Then, one last time, you go, mix, mix, mix, mix!</span><br>
+					<span class="sentence" data-start="411.41" data-end="412.83">And, that&#x27;s it!</span>
+					<span class="sentence" data-start="413.01" data-end="415.43">Your batter is ready to go!</span><br><br>
+					<span class="sentence" data-start="416.25" data-end="419.87">Papa scooped the batter and dropped it into the hot oil.</span><br>
+					<span class="sentence" data-start="420.55" data-end="425.03">Sizzle... crackle...Sizzle SZZZZZZRRR!!</span><br>
+		</div>
+		<div class="text-block " id="textBlock16">
+			
+				<span class="sentence" data-start="426.03" data-end="429.00">The kitchen filled with that yummy smell!</span>
+				<span class="sentence" data-start="429.25" data-end="432.33">and Mini&#x27;s tummy began to rumble.</span><br>
+				<span class="sentence" data-start="434.49" data-end="439.51">“Grrrrrrowl! Papa, I want to eat one right now! Abhi ke abhi!”</span><br>
+				<span class="sentence" data-start="440.41" data-end="443.15">Hold on, my pakora-loving pirate.</span>
+				<span class="sentence" data-start="443.73" data-end="444.61">They&#x27;re hot.</span>
+				<span class="sentence" data-start="444.95" data-end="447.73">Let them cool or you&#x27;ll burn your mouth.</span><br>
+				<span class="sentence" data-start="448.31" data-end="449.91">Mini crossed her arms.</span>
+				<span class="sentence" data-start="450.85" data-end="453.65">No, I can&#x27;t stand here and wait.</span><br>
+				<span class="sentence" data-start="454.03" data-end="457.81">Please, just bring them over soon as they&#x27;re ready.</span><br>
+		</div>
+		
+		</div>
+		</div>
+    </div>
+  
+    
+   <div class="page right-page" id="page11_12">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_11.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_7.webp')">
+            <div class="text-block active" id="textBlock17">
+			<p>
+					<span class="sentence" data-start="463.08" data-end="466.5">On her way out, Mini peeked into the other room</span>
+				<span class="sentence" data-start="466.7" data-end="469.18"> and tiptoed to Lily&#x27;s cradle.</span><br>
+				<span class="sentence" data-start="469.66" data-end="472.32">Lily, Lily, can you hear the rain?</span>
+				<span class="sentence" data-start="472.74" data-end="474.76">It&#x27;s singing just for you!</span><br>
+				</div>
+				
+			<div class="text-block " id="textBlock18">
+			<p>
+				<span class="sentence" data-start="522.929" data-end="526.43">Lily blinked and let out a tiny giggle.</span>
+				<span class="sentence" data-start="526.43" data-end="533.52">Lily is still learning to speak.</span><br>
+				<span class="sentence" data-start="534.36" data-end="537.48">"Oh, tum bolna kab seekhogi, silly Lily?</span>
+				<span class="sentence" data-start="538.4" data-end="542.12">Mini gave her a big squishy kiss and</span>
+				<span class="sentence" data-start="542.12" data-end="543.54">she rushed outside.</span><br><br>
+			</div>
+			
+			<div class="text-block " id="textBlock19">
+			<p>
+			<span class="sentence" data-start="545.3" data-end="548.44">Splash, chick, splosh, splosh!</span><br>
+			<span class="sentence" data-start="548.82" data-end="551.9">Mini jumped in every puddle she could find.</span><br>
+			<span class="sentence" data-start="552.46" data-end="555.34">She twirled, she stomped, she danced.</span><br>
+			<span class="sentence" data-start="556.58" data-end="558.68">Puddles splashed her muddy toes...</span><br>
+			<span class="sentence" data-start="558.68" data-end="561.94">The raindrops tickled her cheeks</span><br>
+			<span class="sentence" data-start="562.14" data-end="564.6">and the wind wiggled her nose...</span><br>
+			</div>
+			
+		</div>
+    </div>
+  </div>
+  
+      
+   <div class="page right-page" id="page13_14">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_14_1.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_7.webp')">
+            <div class="text-block active" id="textBlock20">
+			<p>
+			<span class="sentence" data-start="571.36" data-end="572.76">"Pakoras are ready!"</span>
+			<span class="sentence" data-start="573.46" data-end="575.24">Papa called out from the kitchen.</span><br>
+			<span class="sentence" data-start="575.9" data-end="577.26">Mini rushed to the porch.</span>
+			<span class="sentence" data-start="577.86" data-end="579.72">Mama quickly laid out a mat.</span>
+			<span class="sentence" data-start="580.32" data-end="584.12">And out came Papa holding a big bowl</span>
+			<span class="sentence" data-start="584.12" data-end="588.24">full of crispy, crunchy golden pakoras.</span><br>
+			<span class="sentence" data-start="588.9" data-end="590.66">Mini clapped her hands.</span>
+			<span class="sentence" data-start="590.66" data-end="595.16">Wow! They smell so yum!</span><br><br>
+			<span class="sentence" data-start="598.6" data-end="603.36">They all sat together, munching and crunching pakoras,</span>
+			<span class="sentence" data-start="603.36" data-end="606.76">with tangy green chutney on the side.</span><br>
+			<span class="sentence" data-start="609.02" data-end="612.4">Eating pakoras while watching the rain is the</span>
+			<span class="sentence" data-start="612.4" data-end="614.5">best thing in the world!</span>
+			<span class="sentence" data-start="614.92" data-end="617.06">Oh, majjanu life!</span>
+			</p>
+			</div>
+			<div class="text-block " id="textBlock21">
+			<p>
+				<span class="sentence" data-start="617.06" data-end="620.18">Papa, Papa, look up there!</span>
+				<span class="sentence" data-start="620.82" data-end="622.36">Mini had spotted something.</span>
+				<span class="sentence" data-start="623.32" data-end="624.32">Papa looked up.</span><br><br>
+				<span class="sentence" data-start="624.82" data-end="627.74">There were tiny sparrows huddled under the roof.</span><br>
+				<span class="sentence" data-start="628.88" data-end="631.82">Looks like they forgot to carry their raincoats.</span><br><br>
+				<span class="sentence" data-start="633.7" data-end="635.44">The rain had stopped.</span>
+				<span class="sentence" data-start="635.94" data-end="637.7">The porch was quiet now.</span><br>
+				<span class="sentence" data-start="638.34" data-end="640.78">The mat was rolled up and the pakoras</span>
+				<span class="sentence" data-start="640.78" data-end="642.06">were all gone.</span><br><
+				<span class="sentence" data-start="642.74" data-end="645.02">Just then, knock, knock, knock!</span><br>
+				<span class="sentence" data-start="646.6" data-end="647.26">Mini!</span>
+				<span class="sentence" data-start="647.78" data-end="648.44">Mini!</span>
+				<span class="sentence" data-start="649.14" data-end="649.76">Mini!</span>
+				</p>
+			</div>
+		</div>
+    </div>
+	</div>
+     
+   <div class="page right-page" id="page15_16">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_15.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_17.webp')">
+           <div class="text-block active" id="textBlock22">
+			<p>
+				<span class="sentence" data-start="654.56" data-end="656.14">Mini rushed to the door.</span>
+				<span class="sentence" data-start="656.62" data-end="659.22">There they were, all her friends.</span>
+				<span class="sentence" data-start="659.72" data-end="661.78">Chinu, Meenu and Rishi.</span><br>
+				<span class="sentence" data-start="661.9" data-end="662.18">Mini!</span>
+				<span class="sentence" data-start="662.46" data-end="662.56">Mini!</span>
+				<span class="sentence" data-start="662.78" data-end="663.94">Rain is here!</span>
+				<span class="sentence" data-start="664.22" data-end="665.14">Rain is here!</span><br>
+				<span class="sentence" data-start="665.38" data-end="668.04">We are going to the bus stand.</span>
+				<span class="sentence" data-start="668.28" data-end="669.64">Did you make your paper boats?</span><br>
+				<span class="sentence" data-start="669.94" data-end="670.36">Oops!</span>
+				<span class="sentence" data-start="670.84" data-end="671.74">Mini gasped.</span>
+				<span class="sentence" data-start="671.96" data-end="674.4">I forgot to make my boats.</span><br>
+				<span class="sentence" data-start="674.94" data-end="675.34">Papa!</span>
+				<span class="sentence" data-start="675.68" data-end="676.08">Papa!</span>
+				<span class="sentence" data-start="676.52" data-end="676.86">Papa!</span><br>		</p>
+			</div>
+			  <div class="text-block " id="textBlock23">
+			<p>
+	
+				<span class="sentence" data-start="677.68" data-end="679.5">What is it, Zinni Minni?</span>
+				<span class="sentence" data-start="679.82" data-end="681.82">We forgot to make my boats.</span><br>
+				<span class="sentence" data-start="682.32" data-end="683.94">"Oh, we sure did!</span>
+				<span class="sentence" data-start="684.12" data-end="685.06">But don&#x27;t you worry.</span>
+				<span class="sentence" data-start="685.5" data-end="687.58">We will make them in no time.</span>
+				<span class="sentence" data-start="687.74" data-end="689.7">Main yun gaya aur yun aaya!”</span><br><br>
+				<span class="sentence" data-start="690.9" data-end="694.38">Papa quickly grabbed some colourful papers and went</span>
+				<span class="sentence" data-start="694.38" data-end="696.94">flip, fold, flip, twist, press.</span><br>
+				<span class="sentence" data-start="697.32" data-end="701.24">And in no time, he made ten perfect boats.</span><br>
+				<span class="sentence" data-start="701.82" data-end="703.96">Oh, thank you so much, Papa!</span>
+				<span class="sentence" data-start="704.22" data-end="705.36">You are the best!</span>
+				<span class="sentence" data-start="705.36" data-end="706.96">Mini was so happy.</span><br>
+				</p>
+			</div>
+			
+			 <div class="text-block " id="textBlock24">
+			<p>
+				<span class="sentence" data-start="707.52" data-end="708.74">She turned to her friends.</span>
+				<span class="sentence" data-start="709.28" data-end="710.84">I got my paper boats!</span>
+				<span class="sentence" data-start="711.32" data-end="713.88">Hey, but why the bus stand?</span>
+				<span class="sentence" data-start="714.58" data-end="719.16">Because the puddles there are huge, like super huge.</span><br>
+				<span class="sentence" data-start="719.7" data-end="721.18">Mini ran to Mama.</span>
+				<span class="sentence" data-start="721.56" data-end="722.08">Mama!</span>
+				<span class="sentence" data-start="722.32" data-end="722.56">Mama!</span>
+				<span class="sentence" data-start="723.02" data-end="725.28">Can I go to the bus stand with my friends?</span><br>
+				<span class="sentence" data-start="726" data-end="728.36">Mama was hanging up the clothes again.</span><br>
+				<span class="sentence" data-start="729.04" data-end="732.22">She paused and smiled.</span><br>
+				<span class="sentence" data-start="732.22" data-end="736.3">You can go, but only if…</span><br>
+				<span class="sentence" data-start="736.3" data-end="737.22">Mini froze.</span><br>
+				<span class="sentence" data-start="737.98" data-end="740.42">Only if? What? What, Mama?</span><br>
+			</div>
+			<div class="text-block " id="textBlock25">
+			<p>
+				<span class="sentence" data-start="740.82" data-end="741.86">Mama laughed.</span>
+				<span class="sentence" data-start="742.38" data-end="745.14">Only if I get to come too.</span><br>
+				<span class="sentence" data-start="745.68" data-end="748.14">Mini gave her Mama a giant hug.</span>
+				<span class="sentence" data-start="748.6" data-end="751.3">Yay! You are the best, Mama!</span><br>
+				<span class="sentence" data-start="751.72" data-end="753.12">Meri pyari mama!”</span><br>
+	
+				
+		</div>
+    </div>
+  </div>
+   </div>
+  
+    
+      
+   <div class="page right-page" id="page17_18">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_18.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_19.webp')">
+		 
+		   <div class="text-block active" id="textBlock26">
+			<p>
+				<span class="sentence" data-start="759.71" data-end="764.19">“Thik hai, thik hai, jao, jao jaldi se apna saman le lo! Chalo!” </span><br>
+				<span class="sentence" data-start="765.09" data-end="768.09">Mini quickly packed her paper boats in a small bag.</span>
+				<span class="sentence" data-start="768.59" data-end="769.67">Shall we go now, Mama?</span><br>
+				<span class="sentence" data-start="771.71" data-end="773.59">“Hmm... aren&#x27;t you forgetting something?”</span><br>
+				<span class="sentence" data-start="774.51" data-end="778.97">Mini tapped her chin. "What am I forgetting?</span><br>
+				<span class="sentence" data-start="780.51" data-end="781.49">I don&#x27;t know.</span>
+				<span class="sentence" data-start="781.83" data-end="782.61">Give me a clue."</span><br>
+			</div>
+			<div class="text-block " id="textBlock27">
+			<p>
+				<span class="sentence" data-start="783.33" data-end="786.43">Well, it&#x27;s something we need to carry.</span>
+				<span class="sentence" data-start="786.97" data-end="789.39">And it starts with U.</span><br>
+				<span class="sentence" data-start="792.29" data-end="794.13">Oh!Our umbrella!</span><br>
+				<span class="sentence" data-start="794.91" data-end="796.97">How could I forget our rule?</span><br>
+				<span class="sentence" data-start="797.91" data-end="800.81">Carry an umbrella when there is rain.</span><br>
+				<span class="sentence" data-start="801.01" data-end="804.11">Carry a bottle when it&#x27;s hot again.</span><br>
+				<span class="sentence" data-start="804.69" data-end="806.07">I&#x27;ll get it in no time, Mama.</span><br>
+				<span class="sentence" data-start="806.87" data-end="807.97">"Aur picheka darwaja band karna mat bhulna!</span>
+				<span class="sentence" data-start="809.35" data-end="810.29">Shut it properly."</span>
+				<span class="sentence" data-start="811.07" data-end="812.01">Mama called out.</span><br>
+				<span class="sentence" data-start="812.81" data-end="813.83">I will, Mama.</span><br>
+				</div>
+			</div>
+			<div class="text-block " id="textBlock28">
+			<p>
+				<span class="sentence" data-start="815.27" data-end="818.43">Carry an umbrella when there is rain.</span><br>
+				<span class="sentence" data-start="818.43" data-end="822.11">Carry a bottle when it&#x27;s hot again.</span><br>
+				<span class="sentence" data-start="823.01" data-end="826.27">Mini kept humming as she grabbed her umbrella</span>
+				<span class="sentence" data-start="826.27" data-end="828.19">and headed for the back door.</span>		</p>
+				<span class="sentence" data-start="828.87" data-end="832.17">And her feet forgot to move.</span>
+				<span class="sentence" data-start="832.93" data-end="837.21">Right near the step...was a snail!</span><br>
+				<span class="sentence" data-start="837.75" data-end="842.13">A tiny little snail with a shiny rainbow shell!</span><br>
+				<span class="sentence" data-start="843.17" data-end="847.01">Mini simply dropped to her knees and gazed at it.</span>
+				<span class="sentence" data-start="847.01" data-end="852.35">Whoa... look at you, little slowie.</span><br><br>
+				<span class="sentence" data-start="853.23" data-end="857.21">“MINIIIII!” Mama&#x27;s voice echoed from the porch.</span><br>
+				<span class="sentence" data-start="857.77" data-end="860.15">Mini blinked. Oops! Got to go.</span>
+				<span class="sentence" data-start="861.27" data-end="863.91">She gently shut the door behind her and</span>
+				<span class="sentence" data-start="863.91" data-end="865.09">skipped to the front.</span><br>
+			</div>
+		 
+		 
+		 
+          	</div>
+		</div>
+
+  
+  
+        
+   <div class="page right-page" id="page19_20">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_20_1.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_7.webp')">
+        <div class="text-block active" id="textBlock29">
+				<p>
+				<span class="sentence" data-start="868.85" data-end="871.89">Mini and her friends skipped and hopped </span>
+				<span class="sentence" data-start="872.0" data-end="873.73">all the way to the bus stand.</span><br><br>
+				<span class="sentence" data-start="874.23" data-end="875.49">It was a busy time.</span>
+				<span class="sentence" data-start="875.49" data-end="878.41">Many people had gathered at the bus stop,</span>
+				<span class="sentence" data-start="878.77" data-end="880.03">waiting for their bus.</span><br>
+						</p>
+				</div>
+				<div class="text-block " id="textBlock30">
+				<p>
+				<span class="sentence" data-start="881.03" data-end="883.85">A few had huddled around the chaiwala,</span>
+				<span class="sentence" data-start="884.0" data-end="884.95">warming their hands.</span><br>			</p>
+				</div>
+	
+			<div class="text-block " id="textBlock31">
+				<p>
+				<span class="sentence" data-start="886.03" data-end="888.93">Others had huddled near the bhelwala, </span>
+				<span class="sentence" data-start="889.23" data-end="891.03">waiting for a spicy snack.</span><br><br>
+				<span class="sentence" data-start="894.67" data-end="897.93">Mini and her friends crossed the road carefully with Mama.</span><br>
+			</div>
+				<div class="text-block " id="textBlock32">
+				<p>
+				<span class="sentence" data-start="898.69" data-end="901.33">On the other side, a big fellow </span>
+				<span class="sentence" data-start="901.33" data-end="904.05">in a smart hat was standing on the stage.</span><br>
+				<span class="sentence" data-start="904.05" data-end="908.15">And security guards had assembled neatly in rows</span>
+				<span class="sentence" data-start="908.15" data-end="910.31">before him, doing parade.</span><br>
+				<span class="sentence" data-start="910.55" data-end="911.29">Parade!</span>
+				<span class="sentence" data-start="911.83" data-end="912.75">Saavdhan!</span>
+				<span class="sentence" data-start="913.03" data-end="913.77">Parade!</span>
+				<span class="sentence" data-start="914.17" data-end="915.09">Vishram!</span><br><br>
+				<span class="sentence" data-start="915.67" data-end="918.03">And just behind the guards,</span>
+				<span class="sentence" data-start="920.03" data-end="923.25"> Whoa! Mini&#x27;s eyes went wide.</span><br><br>
+				<span class="sentence" data-start="923.71" data-end="925.67">A huge puddle...!</span><br>
+				</div>
+		</div>
+    </div>
+
+      </div>
+
+   <div class="page right-page" id="page21_22">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_21.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_3.webp')">
+		    <div class="text-block active" id="textBlock33">
+				<p>
+				<span class="sentence" data-start="928.91" data-end="933.07">The kids rushed towards it, punching the air and shouting.</span>
+				<span class="sentence" data-start="934.41" data-end="938.75">Hurray!Ab ayega maja! Dhan-ta-dhan!”</span><br>
+				<span class="sentence" data-start="939.89" data-end="942.93">One by one, they launched their paper boats</span>
+				<span class="sentence" data-start="942.93" data-end="943.75">in the water.</span><br>
+				<span class="sentence" data-start="944.63" data-end="945.03">Wiggle!</span>
+				<span class="sentence" data-start="945.51" data-end="946.11">Waggle!</span>
+				<span class="sentence" data-start="946.41" data-end="946.77">Bob!</span>
+				<span class="sentence" data-start="946.85" data-end="947.11">Bob!</span>
+				<span class="sentence" data-start="947.69" data-end="948.41">Float!</span><br><br>
+				<span class="sentence" data-start="948.77" data-end="952.0">They all jumped and clapped as their boats</span>
+				<span class="sentence" data-start="952.02" data-end="953.43">spread out in the puddle.</span><br>
+		</div>
+		<div class="text-block " id="textBlock34">
+				<p>
+				<span class="sentence" data-start="957.95" data-end="961.47">VRROOOOM! A red bus just zoomed past the puddle.</span>
+				<span class="sentence" data-start="961.47" data-end="964.81">A big wave went through the puddle!</span><br><br>
+				<span class="sentence" data-start="965.41" data-end="968.51">All the boats wobbled, turned around </span>
+				<span class="sentence" data-start="968.89" data-end="971.19">and huddled together in the middle.</span><br>
+				<span class="sentence" data-start="972.07" data-end="975.49">Mini laughed out loud and burst into </span>
+				<span class="sentence" data-start="975.49" data-end="976.65">a song again.</span><br>
+				<span class="sentence" data-start="977.83" data-end="978.21">Oh!</span>
+				<span class="sentence" data-start="978.43" data-end="980.73">How she loved to sing, you know.</span><br>
+				<span class="sentence" data-start="982.11" data-end="987.79">Everyone clapped, everyone laughed and everyone sang along.</span><br>
+						</p>
+			</div>
+		<div class="text-block " id="textBlock35">
+				<p>
+			<span class="sentence" data-start="996.11" data-end="997.83">We are sailing our boats in the puddle, </span><br>
+			<span class="sentence" data-start="998.03" data-end="999.85">They float and bob in this puddle.</span><br>
+			<span class="sentence" data-start="1006.11" data-end="1008.73">Here comes a wave so nice and big,</span><br>
+			<span class="sentence" data-start="1009.01" data-end="1011.09">And they all go huddle in the middle.</span><br>
+			<span class="sentence" data-start="1012.07" data-end="1013.89">Huddle in the middle of the puddle.</span><br>
+			<span class="sentence" data-start="1014.83" data-end="1016.71">Huddle, huddle, huddle, huddle, huddle.</span><br>
+			<span class="sentence" data-start="1017.53" data-end="1037.25">Huddle in the middle of the puddle...</span><br>
+					</p>
+		</div>	
+		</div>
+    </div>
+  </div>
+  
+        
+   <div class="page right-page" id="page23_24">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_25.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_7.webp')">
+               <div class="text-block active" id="textBlock36">
+				<p>
+				<span class="sentence" data-start="1039.869" data-end="1042.75">Mini felt a drop on her head, </span>
+				<span class="sentence" data-start="1042.75" data-end="1044.27">then another on her nose.</span>
+				<span class="sentence" data-start="1044.869" data-end="1046.43">The rain came back.</span><br><br>
+				<span class="sentence" data-start="1047.39" data-end="1050.39">Chalo bachha party, C&#x27;mon, let&#x27;s go home now!</span>
+				<span class="sentence" data-start="1050.39" data-end="1051.93">Mama called out.</span><br>
+				<span class="sentence" data-start="1052.79" data-end="1054.55">Mama popped open her umbrella.</span>
+				<span class="sentence" data-start="1055.29" data-end="1058.55">The kids rushed to her and huddled under the umbrella.</span><br>
+			</div>
+		  <div class="text-block " id="textBlock37">
+				<span class="sentence" data-start="1059.51" data-end="1061.77">They all began walking home together,</span>
+				<span class="sentence" data-start="1062.47" data-end="1067.475">splashing through puddles, their shoes going squish-squash-squish!</span><br>
+				<span class="sentence" data-start="1069.47" data-end="1072.55">On the way back, Mama got jamuns for them -</span>
+				<span class="sentence" data-start="1073.13" data-end="1075.01">shiny, purple jamuns.</span><br>
+				<span class="sentence" data-start="1075.77" data-end="1078.23">Mini looked at her jamuns and smiled.</span>
+				<span class="sentence" data-start="1078.23" data-end="1081.47">The jamuns smiled back at her too.</span><br><br>
+				<span class="sentence" data-start="1082.33" data-end="1084.27">All the kids were munching happily.</span><br>
+				<span class="sentence" data-start="1085.09" data-end="1087.09">Their fingers turned purple.</span><br>
+				<span class="sentence" data-start="1087.69" data-end="1089.39">Their tongues turned purple.</span><br>
+				<span class="sentence" data-start="1090.07" data-end="1091.99">Their teeth turned lavender.</span><br>
+			</div>
+			<div class="text-block " id="textBlock38">
+				<span class="sentence" data-start="1093.15" data-end="1097.07">Mini opened her mouth wide and stuck out her tongue.</span>
+				<span class="sentence" data-start="1098.07" data-end="1101.71">“LOOK! I’m a JAMUN MONSTER! Raaaaarrr!”</span><br>
+				<span class="sentence" data-start="1105.71" data-end="1109.87">They all danced and roared like silly little monsters.</span><br><br>
+				<span class="sentence" data-start="1111.29" data-end="1115.07">“Alright, jamun monsters! Pick up the pace! </span>
+				<span class="sentence" data-start="1115.37" data-end="1117.73">Thoda aur tej chalo! It&#x27;s getting dark!"</span><br><br>
+				<span class="sentence" data-start="1118.35" data-end="1120.55">They all walked quickly behind Mama.</span><br>
+			</div>
+		</div>
+    </div>
+  </div>
+  
+        
+   <div class="page right-page" id="page25_26">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_27.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_29.webp')">
+		<div class="text-block active " id="textBlock39">
+			<span class="sentence" data-start="1123.83" data-end="1127.01">All the friends went their way,</span>
+			<span class="sentence" data-start="1127.01" data-end="1129.33">and Mini and Mama arrived at the gate.</span><br>
+			<span class="sentence" data-start="1130.11" data-end="1131.69">Mini heard voices from inside.</span>
+			<span class="sentence" data-start="1131.69" data-end="1135.21">It was Papa&#x27;s friends.</span><br>
+			<span class="sentence" data-start="1135.91" data-end="1140.43">The house was full of people, talking, laughing, smiling.</span><br><br>
+			<span class="sentence" data-start="1145.19" data-end="1147.49">Looks like we need some snacks.</span>
+			<span class="sentence" data-start="1148.11" data-end="1149.73">Mama hurried into the kitchen.</span><br>
+		</div>
+		  <div class="text-block " id="textBlock40>
+				<p>
+			<span class="sentence" data-start="1151.09" data-end="1153.05">What are you going to make, Mama?</span><br>
+			<span class="sentence" data-start="1153.61" data-end="1155.19">Mama tapped her chin.</span><br>
+			<span class="sentence" data-start="1156.35" data-end="1158.93">Something quick and yummy?</span>
+			<span class="sentence" data-start="1159.67" data-end="1160.49">She smiled.</span><br>
+			<span class="sentence" data-start="1161.65" data-end="1165.69">Let&#x27;s make bhel, the fastest snack in town!</span> <br><br>
+			<span class="sentence" data-start="1166.65" data-end="1168.53">Everyone enjoyed the bhel.</span>
+			<span class="sentence" data-start="1169.09" data-end="1172.13">They were all happy, chatting and munching on</span>
+			<span class="sentence" data-start="1172.13" data-end="1173.11">the bhel together.</span><br>	 
+			</div>
+
+		 <div class="text-block " id="textBlock41">
+			<p>	
+			
+			<span class="sentence" data-start="1173.99" data-end="1177.79">Papa&#x27;s friends had started making plans for the rainy season.</span> <br>
+			<span class="sentence" data-start="1178.37" data-end="1181.05">Let&#x27;s go to see the fireflies next weekend!</span><br>
+			<span class="sentence" data-start="1181.77" data-end="1183.15">Oh, we should plan a trek.</span>
+			<span class="sentence" data-start="1183.61" data-end="1184.95">Pratapgarh chalte hain, chalo.</span><br>
+			<span class="sentence" data-start="1185.67" data-end="1188.35">How about a proper boat ride near the town?</span><br>
+			<span class="sentence" data-start="1188.35" data-end="1191.97">Oh, we must visit the waterfalls and </span>
+			<span class="sentence" data-start="1191.97" data-end="1194.61">eat roasted bhutta at those little stalls.</span><br>
+			<span class="sentence" data-start="1195.35" data-end="1198.19">Devkund waterfall dekhna hi hai is baar!”</span><br><br>
+			<span class="sentence" data-start="1198.67" data-end="1201.03">Ideas flew around like paper planes.</span>
+			<span class="sentence" data-start="1201.75" data-end="1205.89">The grown-ups laughed, talked and kept making the plans.</span>
+			<span class="sentence" data-start="1206.51" data-end="1209.67">Every Sunday in the calendar was getting booked.</span><br>
+			</div>
+		
+		</div>
+    </div>
+  </div>
+  
+        
+   <div class="page right-page" id="page27_28">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_30.webp">
+        </div>
+      </div>
+      <div class="page-back">
+         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_31.webp')">
+          <div class="text-block active" id="textBlock42">
+				<p>
+				<span class="sentence" data-start="1213.41" data-end="1215.59">Mini&#x27;s eyes were getting droopy.</span>
+				<span class="sentence" data-start="1216.25" data-end="1219.29">She was feeling super sleepy.</span><br><br>
+				<span class="sentence" data-start="1219.29" data-end="1223.97">That night, tucked under her cozy blanket, </span><br>
+				<span class="sentence" data-start="1223.97" data-end="1231.21">Mini dreamed of paper boats! Footwalks! Waterfalls! Bhutta stalls!</span><br>
+				<span class="sentence" data-start="1231.21" data-end="1235.43">And golden pakodas in Mama&#x27;s bowl!</span><br>
+				<span class="sentence" data-start="1236.23" data-end="1237.81">She smiled in her sleep.</span><br><br>
+				<span class="sentence" data-start="1238.63" data-end="1242.51">Oh, how much did Mini love the rainy season!</span><br>
+				<span class="sentence" data-start="1242.91" data-end="1244.13">So much!</span>
+				<span class="sentence" data-start="1244.31" data-end="1245.49">So much!</span>
+				<span class="sentence" data-start="1246.51" data-end="1249.27">So, so, so much!</span><br><br>
+				<span class="sentence" data-start="1249.27" data-end="1253.77">She loved it to the moon and back.</span><br>		
+				</p>
+			</div>	
+		</div>
+    </div>
+	</div>
+	
+	
+	  <div class="page right-page" id="page29_30">
+      <div class="page-front">
+        <div class="page-content full-image">
+          <img src="to_the_moon_and_back_32.webp" alt="Page 4">
+	     </div>
+      </div>
+      <div class="page-back">
+        <div class="page-content full-image">
+      <img src="to_the_moon_and_back_cover.webp" alt="Cover Page">
+    </div>
+
+      </div>
+    </div>
+
+
+  </div>
+  
+  
+	<div class="controls" aria-label="Flipbook controls">
+	  <button id="prevBtn" title="Previous (←)">⟵</button>
+	  <button id="playPauseBtn" title="Play/Pause (Space)">▶</button>
+	  <button id="nextBtn" title="Next (→)">⟶</button>
+
+	  <input id="pageSeek" type="range" min="0" max="16" step="1" value="0" aria-label="Page">
+	  <span id="pageLabel">1/16</span>
+
+	  <button id="muteBtn" title="Mute (M)">🔊</button>
+	  <button id="restartBtn" title="Restart (Home)">⟲</button>
+	</div>
+
+  <audio id="flipSound" src="https://www.soundjay.com/mechanical/page-turn-8.mp3" preload="auto"></audio>
+<audio id="narration" src="to_the_moon_and_back.mp3" preload="auto" playsinline></audio>
+
+<script>
+/* ====== DOM refs already in your page ====== */
+const flipPages = [
+  document.getElementById('cover'),
+  document.getElementById('page1_2'),
+  document.getElementById('page3_4'),
+  document.getElementById('page5_6'),
+  document.getElementById('page7_8'),
+  document.getElementById('page9_10'),
+  document.getElementById('page11_12'),
+  document.getElementById('page13_14'),
+  document.getElementById('page15_16'),
+  document.getElementById('page17_18'),
+  document.getElementById('page19_20'),
+  document.getElementById('page21_22'),
+  document.getElementById('page23_24'),
+  document.getElementById('page25_26'),
+  document.getElementById('page27_28'),
+  document.getElementById('page29_30')
+];
+
+const flipSound  = document.getElementById('flipSound');
+const narration  = document.getElementById('narration');
+const sentences  = document.querySelectorAll('.sentence');
+
+/* ====== Timings you already have ====== */
+const flipTimings = [
+  3.2, 61.25, 121.08, 176.01, 286.14, 353.02, 460.04, 568.16,
+  650.08, 756.16, 860.02, 926.34, 1037.36, 1120.52, 1211.02, 1257.97
+];
+
+const blockTimings = [
+  { start: 6.00, end: 30.99 },   { start: 32.37, end: 49.79 },
+  { start: 50.83, end: 61.97 },  { start: 63.09, end: 96.09 },
+  { start: 96.75, end: 118.95 }, { start: 123.9, end: 143.94 },
+  { start: 144.5, end: 152.52 }, { start: 153.26, end: 174.54 },
+  { start: 179.84, end: 223.66 },{ start: 224.34, end: 244.16 },
+  { start: 245.02, end: 284.16 },{ start: 291.04, end: 323.38 },
+  { start: 324.16, end: 352.38 },{ start: 355.73, end: 399.25 },
+  { start: 400.37, end: 425.03 },{ start: 426.03, end: 457.81 },
+  { start: 463.08, end: 474.76 },{ start: 522.929, end: 543.54 },
+  { start: 545.3, end: 564.6 },  { start: 571.36, end: 617.76 },
+  { start: 617.96, end: 649.76 },{ start: 654.56, end: 676.86 },
+  { start: 677.68, end: 706.96 },{ start: 707.52, end: 740.42 },
+  { start: 740.82, end: 753.12 },{ start: 759.71, end: 782.61 },
+  { start: 783.33, end: 813.83 },{ start: 815.27, end: 865.09 },
+  { start: 868.85, end: 880.03 },{ start: 881.03, end: 884.95 },
+  { start: 886.03, end: 897.93 },{ start: 898.69, end: 925.67 },
+  { start: 928.91, end: 953.43 },{ start: 957.95, end: 987.79 },
+  { start: 996.11, end: 1037.25 }, {start: 1039.869, end: 1058.55 },
+{ start: 1059.51, end: 1091.99}, {start: 1093.15, end: 1120.55 },
+{ start: 1123.83, end: 1149.73 }, { start: 1151.09, end: 1173.11 },
+{ start: 1173.99, end: 1209.67 }, { start: 1213.41, end: 1253.77 }
+];
+
+const textBlocks = [
+  document.getElementById("textBlock1"),  document.getElementById("textBlock2"),
+  document.getElementById("textBlock3"),  document.getElementById("textBlock4"),
+  document.getElementById("textBlock5"),  document.getElementById("textBlock6"),
+  document.getElementById("textBlock7"),  document.getElementById("textBlock8"),
+  document.getElementById("textBlock9"),  document.getElementById("textBlock10"),
+  document.getElementById("textBlock11"), document.getElementById("textBlock12"),
+  document.getElementById("textBlock13"), document.getElementById("textBlock14"),
+  document.getElementById("textBlock15"), document.getElementById("textBlock16"),
+  document.getElementById("textBlock17"), document.getElementById("textBlock18"),
+  document.getElementById("textBlock19"), document.getElementById("textBlock20"),
+  document.getElementById("textBlock21"), document.getElementById("textBlock22"),
+  document.getElementById("textBlock23"), document.getElementById("textBlock24"),
+  document.getElementById("textBlock25"), document.getElementById("textBlock26"),
+  document.getElementById("textBlock27"), document.getElementById("textBlock28"),
+  document.getElementById("textBlock29"), document.getElementById("textBlock30"),
+  document.getElementById("textBlock31"), document.getElementById("textBlock32"),
+  document.getElementById("textBlock33"), document.getElementById("textBlock34"),
+  document.getElementById("textBlock35"), document.getElementById("textBlock36"),
+  document.getElementById("textBlock37"), document.getElementById("textBlock38"),
+  document.getElementById("textBlock39"), document.getElementById("textBlock40"),
+  document.getElementById("textBlock41"), document.getElementById("textBlock42")
+];
+
+// Only blocks listed here will change the image
+const IMAGE_CHANGES = new Map([
+  [6,  "to_the_moon_and_back_6.webp"],
+  [10, "to_the_moon_and_back_8_2.webp"],
+  [14, "to_the_moon_and_back_12.webp"],
+  [15, "to_the_moon_and_back_10.webp"],
+  [18, "to_the_moon_and_back_14.webp"],
+  [20, "to_the_moon_and_back_16.webp"],
+  [23, "to_the_moon_and_back_18_2.webp"],
+  [27, "to_the_moon_and_back_20.webp"],
+  [29, "to_the_moon_and_back_22.webp"],
+  [30, "to_the_moon_and_back_23.webp"],
+  [31, "to_the_moon_and_back_24.webp"],
+  [33, "to_the_moon_and_back_26.webp"],
+  [34, "to_the_moon_and_back_25.webp"],
+  [36, "to_the_moon_and_back_27_1.webp"]
+]);
+
+/* ====== State & tunables ====== */
+let currentIndex = 0;
+let currentBlockIndex = 0;
+
+const PAGE_TRANSITION_SEC = 1.0;  // matches your CSS transition
+const FLIP_LEAD_SEC       = 0.45; // start flip a bit before timing so it lands on time
+let squelchAutoFlipTicks  = 0;    // suppress auto-flip right after manual seek
+
+/* ====== Helpers ====== */
+function safeTimeForIndex(idx){
+  const a = (idx === 0) ? 0 : flipTimings[idx - 1];
+  const b = (idx < flipTimings.length) ? flipTimings[idx] : (narration.duration || a + 60);
+  // midpoint of current page; cap early so we don't go too deep
+  return Math.min((narration.duration || b), a + Math.min(0.5, (b - a) / 2));
+}
+
+function targetIndexFromTime(t){
+  const leadT = t + FLIP_LEAD_SEC;
+  let i = 0;
+  while (i < flipTimings.length && leadT >= flipTimings[i]) i++;
+  return i; // 0..flipPages.length
+}
+
+/* ====== Visual flips ====== */
+function flipNext(){
+  if (currentIndex >= flipPages.length) return;
+  const p = flipPages[currentIndex];
+  p.classList.add('flipped');
+  setTimeout(()=>{ p.style.zIndex = 'auto'; }, (PAGE_TRANSITION_SEC * 1000)/2);
+  if (flipSound){
+    try { flipSound.currentTime = 0; flipSound.play(); } catch(e){}
+  }
+  currentIndex++;
+}
+
+function applyFlipState(idx){
+  // Snap all pages to a given state (no audio seeking)
+  for (let i=0; i<flipPages.length; i++){
+    const p = flipPages[i];
+    if (i < idx){ p.classList.add('flipped'); p.style.zIndex = 'auto'; }
+    else        { p.classList.remove('flipped'); p.style.zIndex = '';   }
+  }
+  currentIndex = idx;
+  updateUI();
+}
+
+/* ====== Manual navigation (seeks audio + snaps pages) ====== */
+function goToFlipIndex(idx){
+  idx = Math.max(0, Math.min(idx, flipPages.length));
+  narration.currentTime = safeTimeForIndex(idx);
+  applyFlipState(idx);
+  squelchAutoFlipTicks = 2; // let the timeupdate settle first
+  runSyncPass();            // immediate refresh
+}
+
+/* ====== One-pass sync loop ====== */
+function runSyncPass(){
+  const t = narration.currentTime || 0;
+
+  // Sentence highlights
+  sentences.forEach(span=>{
+    const s = +span.dataset.start, e = +span.dataset.end;
+    const on = (t >= s && t <= e);
+    if (on !== span.classList.contains('active')){
+      span.classList.toggle('active', on);
+    }
+  });
+
+  // Text blocks + optional image swap
+  for (let i=0; i<blockTimings.length; i++){
+    const w = blockTimings[i];
+    if (t >= w.start && t <= w.end){
+      if (currentBlockIndex !== i){
+        if (textBlocks[currentBlockIndex]) textBlocks[currentBlockIndex].classList.remove('active');
+        textBlocks[i].classList.add('active');
+        currentBlockIndex = i;
+
+        const newImage = IMAGE_CHANGES.get(currentBlockIndex);
+        if (newImage){
+          const visiblePageIndex = Math.max(currentIndex, 0);
+          const currentPage = flipPages[visiblePageIndex];
+          const img = currentPage?.querySelector('.page-front .full-image img');
+          if (img && !img.src.endsWith(newImage)){
+            img.classList.remove('visible'); img.classList.add('fading');
+            img.onload = () => {
+              requestAnimationFrame(()=>{
+                img.classList.remove('fading');
+                img.classList.add('visible');
+              });
+            };
+            img.src = newImage;
+          }
+        }
+      }
+      break;
+    }
+  }
+
+  // Auto flip driven by audio
+  if (squelchAutoFlipTicks > 0){
+    squelchAutoFlipTicks--;
+  } else {
+    const targetIdx = targetIndexFromTime(t);
+    if (targetIdx > currentIndex){
+      flipNext();              // animate forward
+    } else if (targetIdx < currentIndex - 1){
+      applyFlipState(targetIdx); // snap back (no seeking)
+    }
+  }
+
+  updateUI();
+}
+
+/* ====== Controls wiring ====== */
+const prevBtn      = document.getElementById('prevBtn');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const nextBtn      = document.getElementById('nextBtn');
+const muteBtn      = document.getElementById('muteBtn');
+const restartBtn   = document.getElementById('restartBtn');
+const pageSeek     = document.getElementById('pageSeek');
+const pageLabel    = document.getElementById('pageLabel');
+
+if (pageSeek){
+  pageSeek.max  = String(flipPages.length);
+  pageSeek.step = '1';
+  pageSeek.value = '0';
+  if (pageLabel) pageLabel.textContent = `1/${flipPages.length}`;
+}
+
+function updateUI(){
+  if (pageSeek)  pageSeek.value = String(currentIndex);
+  if (pageLabel) pageLabel.textContent = `${Math.min(currentIndex + 1, flipPages.length)}/${flipPages.length}`;
+  if (playPauseBtn) playPauseBtn.textContent = narration.paused ? '▶' : '⏸';
+  if (muteBtn)      muteBtn.textContent      = narration.muted ? '🔇' : '🔊';
+  if (prevBtn)      prevBtn.disabled         = (currentIndex <= 0);
+  if (nextBtn)      nextBtn.disabled         = (currentIndex >= flipPages.length);
+}
+
+function togglePlay(){ if (narration.paused) narration.play(); else narration.pause(); updateUI(); }
+function nextPage(){ goToFlipIndex(currentIndex + 1); }
+function prevPage(){ goToFlipIndex(currentIndex - 1); }
+function restart(){  goToFlipIndex(0); }
+
+if (pageSeek)     pageSeek.addEventListener('input', ()=> goToFlipIndex(parseInt(pageSeek.value, 10)));
+if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlay);
+if (nextBtn)      nextBtn.addEventListener('click', nextPage);
+if (prevBtn)      prevBtn.addEventListener('click', prevPage);
+if (restartBtn)   restartBtn.addEventListener('click', restart);
+if (muteBtn)      muteBtn.addEventListener('click', ()=>{ narration.muted = !narration.muted; updateUI(); });
+
+document.addEventListener('keydown', (e)=>{
+  if (/input|textarea|select/i.test(e.target?.tagName || '')) return;
+  if (e.code === 'Space'){ e.preventDefault(); togglePlay(); }
+  else if (e.key === 'ArrowRight'){ e.preventDefault(); nextPage(); }
+  else if (e.key === 'ArrowLeft'){ e.preventDefault(); prevPage(); }
+  else if (e.key.toLowerCase() === 'm'){ narration.muted = !narration.muted; updateUI(); }
+  else if (e.key === 'Home'){ e.preventDefault(); restart(); }
+  else if (e.key === 'End'){ e.preventDefault(); goToFlipIndex(flipPages.length); }
+});
+
+/* ====== One loop: driven by audio ====== */
+narration.addEventListener('timeupdate',      runSyncPass);
+narration.addEventListener('seeked',          ()=>{ squelchAutoFlipTicks = 2; runSyncPass(); });
+narration.addEventListener('loadedmetadata',  runSyncPass);
+narration.addEventListener('play',            updateUI);
+narration.addEventListener('pause',           updateUI);
+narration.addEventListener('ended',           updateUI);
+
+// First paint
+updateUI();
+if (!isNaN(narration.duration)) runSyncPass();
+
+/* ====== Auto-hide controls (2s) but show briefly on load ====== */
+(function(){
+  const controlsEl = document.querySelector('.controls');
+  if (!controlsEl) return;
+
+  const HIDE_MS = 2000;
+  let hideTimer = null;
+
+  function hideControls(){ controlsEl.classList.remove('is-visible'); }
+  function showControls(autoHide = true){
+    controlsEl.classList.add('is-visible');
+    if (autoHide){
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(hideControls, HIDE_MS);
+    }
+  }
+
+  // Show briefly on load
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', ()=> showControls(true));
+  } else {
+    showControls(true);
+  }
+
+  // Re-show on activity (mobile-friendly)
+  ['pointerdown','touchstart','click','mousemove','keydown'].forEach(ev=>{
+    document.addEventListener(ev, (e)=>{
+      // If interaction is on the bar, keep it up and reset timer
+      if (controlsEl.contains(e.target)){
+        clearTimeout(hideTimer);
+        controlsEl.classList.add('is-visible');
+        return;
+      }
+      showControls(true);
+    }, { passive: true });
+  });
+
+  // Keep visible while interacting with the bar, then auto-hide again
+  controlsEl.addEventListener('pointerdown', ()=> clearTimeout(hideTimer));
+  controlsEl.addEventListener('pointerup',   ()=> showControls(true));
+  controlsEl.addEventListener('touchstart',  ()=> clearTimeout(hideTimer), { passive:true });
+  controlsEl.addEventListener('touchend',    ()=> showControls(true),      { passive:true });
+
+  // Audio state changes nudge visibility
+  ['play','pause','seeked','loadedmetadata'].forEach(ev=>{
+    narration.addEventListener(ev, ()=> showControls(true));
+  });
+})();
+</script>
+
+  </body>
+</html>
