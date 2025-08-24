@@ -99,7 +99,7 @@
     }
 	
 	.page-content.text-overlay .text-block p {
-		margin:2px;                 /* removes the big top/bottom gap */
+		margin: 0;                 /* removes the big top/bottom gap */
 	}
 
     .overlay-text {
@@ -148,81 +148,77 @@
       background-color: transparent;
       line-height: 1.6;
       border-radius: 2px;
-		}
-				
-			
-		/* Base style */
-		.controls{
-		  position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
-		  display:flex; align-items:center; gap:8px;
-		  padding:8px 12px; border-radius:9999px; z-index:2147483647;
-		  background:rgba(0,0,0,.45); color:#fff; backdrop-filter:blur(6px);
-		  font-size:14px; user-select:none;
-		  /* auto-hide defaults */
-		  opacity:0; pointer-events:none;
-		  transform:translate(-50%, 8px);  /* slight slide down when hidden */
-		  transition:opacity .25s ease, transform .25s ease;
-		}
-		.controls button{
-		  border:0; background:transparent; color:inherit; cursor:pointer;
-		  padding:6px 10px; border-radius:999px; font-size:16px;
-		}
-		.controls button:hover{ background:rgba(255,255,255,.15); }
-		.controls input[type="range"]{ width:280px; }
+	}
 
-		/* Visible state */
-		.controls.is-visible{
-		  opacity:1; pointer-events:auto;
-		  transform:translate(-50%, 0);
-		}
+.controls{
+  position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
+  display:flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:9999px; z-index:9999;
+  background:rgba(0,0,0,.45); color:#fff; backdrop-filter:blur(6px);
+  font-size:14px; user-select:none;
+}
+.controls button{
+  border:0; background:transparent; color:inherit; cursor:pointer;
+  padding:6px 10px; border-radius:999px; font-size:16px;
+}
+.controls button:hover{ background:rgba(255,255,255,.15); }
+.controls input[type="range"]{ width:280px; }
 
-		/* (Optional) small screens tweak */
-		@media (max-width: 480px){
-		  .controls input[type="range"]{ width:200px; }
-		}
+.controls{
+  opacity: 0;
+  transform: translate(-50%, 8px);   /* slide down a bit when hidden */
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
 
-		.page-content.full-image {
-		  position: relative;
-		}
+/* Shown state */
+.controls.is-visible{
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+.page-content.full-image {
+  position: relative;
+}
 
-		.page-content.full-image img {
-		  width: 100%;
-		  height: 100%;
-		  object-fit: cover;
-		  display: block;
-		  /* We define the transition properties here, but not the duration. */
-		  transition-property: opacity;
-		  transition-timing-function: ease-in-out;
-		}
+.page-content.full-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* We define the transition properties here, but not the duration. */
+  transition-property: opacity;
+  transition-timing-function: ease-in-out;
+}
 
-		/* This class sets the opacity and a longer duration for the fade-out. */
-		.page-content.full-image img.fading {
-		  opacity: 0;
-		  transition-duration: 1.5s;
-		}
+/* This class sets the opacity and a longer duration for the fade-out. */
+.page-content.full-image img.fading {
+  opacity: 0;
+  transition-duration: 1.5s;
+}
 
-		/* This class sets the opacity and also a longer duration for the fade-in. */
-		.page-content.full-image img.visible {
-		  opacity: 1;
-		  transition-duration: 1.5s;
-		}
-		   #cover { z-index: 100; }
-		#page1_2 { z-index: 99; }
-		#page3_4 { z-index: 98; }
-		#page5_6 { z-index: 97; }
-		#page7_8 { z-index: 96; }
-		#page9_10 { z-index: 95; }
-		#page11_12 { z-index: 94; }
-		#page13_14 { z-index: 93; }
-		#page15_16 { z-index: 92; }
-		#page17_18 { z-index: 91; }
-		#page19_20 { z-index: 90; }
-		#page21_22 { z-index: 89; }
-		#page23_24 { z-index: 88; }
-		#page25_26 { z-index: 87; }
-		#page27_28 { z-index: 86; }
-		#page29_30 { z-index: 85; }
-		#page31_32 { z-index: 84; }
+/* This class sets the opacity and also a longer duration for the fade-in. */
+.page-content.full-image img.visible {
+  opacity: 1;
+  transition-duration: 1.5s;
+}
+   #cover { z-index: 100; }
+#page1_2 { z-index: 99; }
+#page3_4 { z-index: 98; }
+#page5_6 { z-index: 97; }
+#page7_8 { z-index: 96; }
+#page9_10 { z-index: 95; }
+#page11_12 { z-index: 94; }
+#page13_14 { z-index: 93; }
+#page15_16 { z-index: 92; }
+#page17_18 { z-index: 91; }
+#page19_20 { z-index: 90; }
+#page21_22 { z-index: 89; }
+#page23_24 { z-index: 88; }
+#page25_26 { z-index: 87; }
+#page27_28 { z-index: 86; }
+#page29_30 { z-index: 85; }
+#page31_32 { z-index: 84; }
 
 
   </style>
@@ -248,7 +244,7 @@
         <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_1.webp')">
 					  <div class="text-block active" id="textBlock1">
 			  <p>
-				<span class="sentence" data-start="6.00" data-end="9.89">Pitter-patter, tup tup tup!</span><br>
+				<span class="sentence" data-start="6.00" data-end="9.89">Pitter-patter, pitter-patter, pitter-patter, tup tup tup!</span><br>
 				<span class="sentence" data-start="10.00" data-end="13.00">Pitter-patter, pitter-patter, pitter-patter—tup tup!</span><br>
 				<span class="sentence" data-start="13.89" data-end="17.23">The raindrops were playing music on the roof.</span><br><br>
 				<span class="sentence" data-start="17.79" data-end="18.89">Mini jumped out of bed</span>
@@ -393,7 +389,7 @@
 				<span class="sentence" data-start="236.84" data-end="239.1">Ants don&#x27;t swim, silly girl!</span><br><br>
 				<span class="sentence" data-start="239.64" data-end="241.38">Mini&#x27;s face fell for a moment.</span>
 				<span class="sentence" data-start="241.88" data-end="243.26">Her lips pouted.</span> 
-				<span class="sentence" data-start="243.8" data-end="244.16">Awwww!!!</span>
+				<span class="sentence" data-start="243.8" data-end="244.16">Aww!</span>
 			</p>
 			</div>	
 			<div class="text-block " id="textBlock11">
@@ -636,15 +632,15 @@
 				<span class="sentence" data-start="701.82" data-end="703.96">Oh, thank you so much, Papa!</span>
 				<span class="sentence" data-start="704.22" data-end="705.36">You are the best!</span>
 				<span class="sentence" data-start="705.36" data-end="706.96">Mini was so happy.</span><br>
-				</p>
-			</div>
-			
-			 <div class="text-block " id="textBlock24">
-			<p>
 				<span class="sentence" data-start="707.52" data-end="708.74">She turned to her friends.</span>
 				<span class="sentence" data-start="709.28" data-end="710.84">I got my paper boats!</span>
 				<span class="sentence" data-start="711.32" data-end="713.88">Hey, but why the bus stand?</span>
 				<span class="sentence" data-start="714.58" data-end="719.16">Because the puddles there are huge, like super huge.</span><br>
+			</p>
+			</div>
+			
+			 <div class="text-block " id="textBlock24">
+			<p>
 				<span class="sentence" data-start="719.7" data-end="721.18">Mini ran to Mama.</span>
 				<span class="sentence" data-start="721.56" data-end="722.08">Mama!</span>
 				<span class="sentence" data-start="722.32" data-end="722.56">Mama!</span>
@@ -703,14 +699,14 @@
 				<span class="sentence" data-start="809.35" data-end="810.29">Shut it properly."</span>
 				<span class="sentence" data-start="811.07" data-end="812.01">Mama called out.</span><br>
 				<span class="sentence" data-start="812.81" data-end="813.83">I will, Mama.</span><br>
-				</div>
-			</div>
-			<div class="text-block " id="textBlock28">
-			<p>
 				<span class="sentence" data-start="815.27" data-end="818.43">Carry an umbrella when there is rain.</span><br>
 				<span class="sentence" data-start="818.43" data-end="822.11">Carry a bottle when it&#x27;s hot again.</span><br>
 				<span class="sentence" data-start="823.01" data-end="826.27">Mini kept humming as she grabbed her umbrella</span>
 				<span class="sentence" data-start="826.27" data-end="828.19">and headed for the back door.</span>		</p>
+			</div>
+			</div>
+			<div class="text-block " id="textBlock28">
+			<p>
 				<span class="sentence" data-start="828.87" data-end="832.17">And her feet forgot to move.</span>
 				<span class="sentence" data-start="832.93" data-end="837.21">Right near the step...was a snail!</span><br>
 				<span class="sentence" data-start="837.75" data-end="842.13">A tiny little snail with a shiny rainbow shell!</span><br>
@@ -749,14 +745,14 @@
 				</div>
 				<div class="text-block " id="textBlock30">
 				<p>
-				<span class="sentence" data-start="881.03" data-end="883.85">A few had huddled around the chaiwala,</span>
-				<span class="sentence" data-start="884.0" data-end="884.95">warming their hands.</span><br>			</p>
+				<span class="sentence" data-start="881.03" data-end="884.11">A few had huddled around the chaiwala, warming</span>
+				<span class="sentence" data-start="884.11" data-end="884.95">their hands.</span><br>			</p>
 				</div>
 	
 			<div class="text-block " id="textBlock31">
 				<p>
-				<span class="sentence" data-start="886.03" data-end="888.93">Others had huddled near the bhelwala, </span>
-				<span class="sentence" data-start="889.23" data-end="891.03">waiting for a spicy snack.</span><br><br>
+				<span class="sentence" data-start="886.03" data-end="889.63">Others had huddled near the bhelwala, waiting for</span>
+				<span class="sentence" data-start="889.63" data-end="891.03">a spicy snack.</span><br><br>
 				<span class="sentence" data-start="894.67" data-end="897.93">Mini and her friends crossed the road carefully with Mama.</span><br>
 			</div>
 				<div class="text-block " id="textBlock32">
@@ -858,14 +854,13 @@
 				<span class="sentence" data-start="1085.09" data-end="1087.09">Their fingers turned purple.</span><br>
 				<span class="sentence" data-start="1087.69" data-end="1089.39">Their tongues turned purple.</span><br>
 				<span class="sentence" data-start="1090.07" data-end="1091.99">Their teeth turned lavender.</span><br>
-			</div>
-			<div class="text-block " id="textBlock38">
 				<span class="sentence" data-start="1093.15" data-end="1097.07">Mini opened her mouth wide and stuck out her tongue.</span>
 				<span class="sentence" data-start="1098.07" data-end="1101.71">“LOOK! I’m a JAMUN MONSTER! Raaaaarrr!”</span><br>
 				<span class="sentence" data-start="1105.71" data-end="1109.87">They all danced and roared like silly little monsters.</span><br><br>
 				<span class="sentence" data-start="1111.29" data-end="1115.07">“Alright, jamun monsters! Pick up the pace! </span>
 				<span class="sentence" data-start="1115.37" data-end="1117.73">Thoda aur tej chalo! It&#x27;s getting dark!"</span><br><br>
 				<span class="sentence" data-start="1118.35" data-end="1120.55">They all walked quickly behind Mama.</span><br>
+
 			</div>
 		</div>
     </div>
@@ -880,7 +875,7 @@
       </div>
       <div class="page-back">
          <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_29.webp')">
-		<div class="text-block active " id="textBlock39">
+		<div class="text-block active " id="textBlock38">
 			<span class="sentence" data-start="1123.83" data-end="1127.01">All the friends went their way,</span>
 			<span class="sentence" data-start="1127.01" data-end="1129.33">and Mini and Mama arrived at the gate.</span><br>
 			<span class="sentence" data-start="1130.11" data-end="1131.69">Mini heard voices from inside.</span>
@@ -889,7 +884,7 @@
 			<span class="sentence" data-start="1145.19" data-end="1147.49">Looks like we need some snacks.</span>
 			<span class="sentence" data-start="1148.11" data-end="1149.73">Mama hurried into the kitchen.</span><br>
 		</div>
-		  <div class="text-block " id="textBlock40>
+		  <div class="text-block " id="textBlock39">
 				<p>
 			<span class="sentence" data-start="1151.09" data-end="1153.05">What are you going to make, Mama?</span><br>
 			<span class="sentence" data-start="1153.61" data-end="1155.19">Mama tapped her chin.</span><br>
@@ -901,7 +896,7 @@
 			<span class="sentence" data-start="1172.13" data-end="1173.11">the bhel together.</span><br>	 
 			</div>
 
-		 <div class="text-block " id="textBlock41">
+		 <div class="text-block " id="textBlock40">
 			<p>	
 			
 			<span class="sentence" data-start="1173.99" data-end="1177.79">Papa&#x27;s friends had started making plans for the rainy season.</span> <br>
@@ -930,7 +925,7 @@
       </div>
       <div class="page-back">
          <div class="page-content text-overlay" style="background-image: url('to_the_moon_and_back_31.webp')">
-          <div class="text-block active" id="textBlock42">
+          <div class="text-block active" id="textBlock41">
 				<p>
 				<span class="sentence" data-start="1213.41" data-end="1215.59">Mini&#x27;s eyes were getting droopy.</span>
 				<span class="sentence" data-start="1216.25" data-end="1219.29">She was feeling super sleepy.</span><br><br>
@@ -981,326 +976,389 @@
 	</div>
 
   <audio id="flipSound" src="https://www.soundjay.com/mechanical/page-turn-8.mp3" preload="auto"></audio>
-<audio id="narration" src="to_the_moon_and_back.mp3" preload="auto" playsinline></audio>
+  <audio id="narration" src="to_the_moon_and_back.mp3" preload="auto"></audio>
 
-<script>
-/* ====== DOM refs already in your page ====== */
-const flipPages = [
-  document.getElementById('cover'),
-  document.getElementById('page1_2'),
-  document.getElementById('page3_4'),
-  document.getElementById('page5_6'),
-  document.getElementById('page7_8'),
-  document.getElementById('page9_10'),
-  document.getElementById('page11_12'),
-  document.getElementById('page13_14'),
-  document.getElementById('page15_16'),
-  document.getElementById('page17_18'),
-  document.getElementById('page19_20'),
-  document.getElementById('page21_22'),
-  document.getElementById('page23_24'),
-  document.getElementById('page25_26'),
-  document.getElementById('page27_28'),
-  document.getElementById('page29_30')
-];
+	<script>
+						const flipPages = [
+					  document.getElementById('cover'),
+					  document.getElementById('page1_2'),
+					  document.getElementById('page3_4'),
+					  document.getElementById('page5_6'),
+					  document.getElementById('page7_8'),
+					  document.getElementById('page9_10'),
+					  document.getElementById('page11_12'),
+					  document.getElementById('page13_14'),
+					  document.getElementById('page15_16'),
+					  document.getElementById('page17_18'),
+					  document.getElementById('page19_20'),
+					  document.getElementById('page21_22'),
+					  document.getElementById('page23_24'),
+					  document.getElementById('page25_26'),
+					  document.getElementById('page27_28'),
+					  document.getElementById('page29_30')
+					];
 
-const flipSound  = document.getElementById('flipSound');
-const narration  = document.getElementById('narration');
-const sentences  = document.querySelectorAll('.sentence');
+					const flipSound = document.getElementById('flipSound');
+					const narration = document.getElementById('narration');
+					const sentences = document.querySelectorAll(".sentence");
 
-/* ====== Timings you already have ====== */
-const flipTimings = [
-  3.2, 61.25, 121.08, 176.01, 286.14, 353.02, 460.04, 568.16,
-  650.08, 756.16, 860.02, 926.34, 1037.36, 1120.52, 1211.02, 1257.97
-];
+					const flipTimings = [
+					  3.2, 61.25, 121.08, 176.01, 286.14, 353.02, 460.04, 568.16,
+					  650.08, 756.16, 860.02, 926.34, 1037.36, 1120.52, 1211.02, 1257.97
+					];
 
-const blockTimings = [
-  { start: 6.00, end: 30.99 },   { start: 32.37, end: 49.79 },
-  { start: 50.83, end: 61.97 },  { start: 63.09, end: 96.09 },
-  { start: 96.75, end: 118.95 }, { start: 123.9, end: 143.94 },
-  { start: 144.5, end: 152.52 }, { start: 153.26, end: 174.54 },
-  { start: 179.84, end: 223.66 },{ start: 224.34, end: 244.16 },
-  { start: 245.02, end: 284.16 },{ start: 291.04, end: 323.38 },
-  { start: 324.16, end: 352.38 },{ start: 355.73, end: 399.25 },
-  { start: 400.37, end: 425.03 },{ start: 426.03, end: 457.81 },
-  { start: 463.08, end: 474.76 },{ start: 522.929, end: 543.54 },
-  { start: 545.3, end: 564.6 },  { start: 571.36, end: 617.76 },
-  { start: 617.96, end: 649.76 },{ start: 654.56, end: 676.86 },
-  { start: 677.68, end: 706.96 },{ start: 707.52, end: 740.42 },
-  { start: 740.82, end: 753.12 },{ start: 759.71, end: 782.61 },
-  { start: 783.33, end: 813.83 },{ start: 815.27, end: 865.09 },
-  { start: 868.85, end: 880.03 },{ start: 881.03, end: 884.95 },
-  { start: 886.03, end: 897.93 },{ start: 898.69, end: 925.67 },
-  { start: 928.91, end: 953.43 },{ start: 957.95, end: 987.79 },
-  { start: 996.11, end: 1037.25 }, {start: 1039.869, end: 1058.55 },
-{ start: 1059.51, end: 1091.99}, {start: 1093.15, end: 1120.55 },
-{ start: 1123.83, end: 1149.73 }, { start: 1151.09, end: 1173.11 },
-{ start: 1173.99, end: 1209.67 }, { start: 1213.41, end: 1253.77 }
-];
+				const blockTimings = [
+						  { start: 6.00, end: 30.99 },   // textBlock1
+						  { start: 32.37, end: 49.79 },  // textBlock2
+						  { start: 50.83, end: 61.97 },  // textBlock3
+						  { start: 63.09, end: 96.09 },  // textBlock4
+						  { start: 96.75, end: 118.95 }, // textBlock5
+						  { start: 123.9, end: 143.94 }, // textBlock6
+						  { start: 144.5, end: 152.52 }, // textBlock8
+						  { start: 153.26, end: 174.54 },// textBlock9
+						  { start: 179.84, end: 223.66 },// textBlock10
+						  { start: 224.34, end: 244.16 }, // textBlock11
+						  { start: 245.02, end: 284.16 },// textBlock12
+						  { start: 291.04, end: 323.38 },// textBlock13
+						  { start: 324.16, end: 352.38 },// textBlock14
+						  { start: 355.73, end: 399.25 },// textBlock15
+						  { start: 400.37, end: 425.03 },// textBlock16
+						  { start: 426.03, end: 457.81 },// textBlock17
+						  { start: 463.08, end: 474.76 },// textBlock18
+						  { start: 522.929, end: 543.54 },// textBlock19
+						  { start: 545.3, end: 564.6 },  // textBlock20
+						  { start: 571.36, end: 617.76 },// textBlock21
+						  { start: 617.96, end: 649.76 },// textBlock22
+						  { start: 654.56, end: 676.86 },// textBlock23
+						  { start: 677.68, end: 719.16 },// textBlock24
+						  { start: 719.7, end: 740.42 }, // textBlock25
+						  { start: 740.82, end: 753.12 },// textBlock26
+						  { start: 759.71, end: 782.61 },// textBlock27
+						  { start: 783.33, end: 828.19 },// textBlock28
+						  { start: 828.87, end: 865.09 },// textBlock29
+						  { start: 868.85, end: 880.03 },// textBlock30
+						  { start: 881.03, end: 884.95 },// textBlock31
+						  { start: 886.03, end: 897.93 },// textBlock32
+						  { start: 898.69, end: 925.67 },// textBlock33
+						  { start: 928.91, end: 953.43 },// textBlock34
+						  { start: 957.95, end: 987.79 },// textBlock35
+						  { start: 996.11, end: 1037.25 },// textBlock36
+						  { start: 1039.869, end: 1058.55 },// textBlock37
+						  { start: 1059.51, end: 1120.55 },// textBlock38
+						  { start: 1123.83, end: 1149.73 },// textBlock39
+						  { start: 1151.09, end: 1173.11 },// textBlock40
+						  { start: 1173.99, end: 1209.67 },// textBlock41
+						  { start: 1213.41, end: 1253.77 } // textBlock42
+						  ];
+					let currentIndex = 0;
 
-const textBlocks = [
-  document.getElementById("textBlock1"),  document.getElementById("textBlock2"),
-  document.getElementById("textBlock3"),  document.getElementById("textBlock4"),
-  document.getElementById("textBlock5"),  document.getElementById("textBlock6"),
-  document.getElementById("textBlock7"),  document.getElementById("textBlock8"),
-  document.getElementById("textBlock9"),  document.getElementById("textBlock10"),
-  document.getElementById("textBlock11"), document.getElementById("textBlock12"),
-  document.getElementById("textBlock13"), document.getElementById("textBlock14"),
-  document.getElementById("textBlock15"), document.getElementById("textBlock16"),
-  document.getElementById("textBlock17"), document.getElementById("textBlock18"),
-  document.getElementById("textBlock19"), document.getElementById("textBlock20"),
-  document.getElementById("textBlock21"), document.getElementById("textBlock22"),
-  document.getElementById("textBlock23"), document.getElementById("textBlock24"),
-  document.getElementById("textBlock25"), document.getElementById("textBlock26"),
-  document.getElementById("textBlock27"), document.getElementById("textBlock28"),
-  document.getElementById("textBlock29"), document.getElementById("textBlock30"),
-  document.getElementById("textBlock31"), document.getElementById("textBlock32"),
-  document.getElementById("textBlock33"), document.getElementById("textBlock34"),
-  document.getElementById("textBlock35"), document.getElementById("textBlock36"),
-  document.getElementById("textBlock37"), document.getElementById("textBlock38"),
-  document.getElementById("textBlock39"), document.getElementById("textBlock40"),
-  document.getElementById("textBlock41"), document.getElementById("textBlock42")
-];
+					const textBlocks = [ 
+					document.getElementById("textBlock1"), document.getElementById("textBlock2"), document.getElementById("textBlock3"), document.getElementById("textBlock4"), document.getElementById("textBlock5"), 
+					document.getElementById("textBlock6"), document.getElementById("textBlock7"), document.getElementById("textBlock8"), document.getElementById("textBlock9"), document.getElementById("textBlock10"), 
+					document.getElementById("textBlock11"), document.getElementById("textBlock12"), document.getElementById("textBlock13"), document.getElementById("textBlock14"), document.getElementById("textBlock15"), 
+					document.getElementById("textBlock16"), document.getElementById("textBlock17"), document.getElementById("textBlock18"), document.getElementById("textBlock19"), document.getElementById("textBlock20"), 
+					document.getElementById("textBlock21"), document.getElementById("textBlock22"), document.getElementById("textBlock23"), document.getElementById("textBlock24"), document.getElementById("textBlock25"),
+					document.getElementById("textBlock26"), document.getElementById("textBlock27"), document.getElementById("textBlock28"), document.getElementById("textBlock29"), document.getElementById("textBlock30"), document.getElementById("textBlock31"),
+					document.getElementById("textBlock32"),document.getElementById("textBlock33"),	document.getElementById("textBlock34"), document.getElementById("textBlock35"), document.getElementById("textBlock36"),
+					document.getElementById("textBlock37"),document.getElementById("textBlock38"), 	document.getElementById("textBlock39")	,document.getElementById("textBlock40"),document.getElementById("textBlock41"),
+					document.getElementById("textBlock42")						];
 
-// Only blocks listed here will change the image
-const IMAGE_CHANGES = new Map([
-  [6,  "to_the_moon_and_back_6.webp"],
-  [10, "to_the_moon_and_back_8_2.webp"],
-  [14, "to_the_moon_and_back_12.webp"],
-  [15, "to_the_moon_and_back_10.webp"],
-  [18, "to_the_moon_and_back_14.webp"],
-  [20, "to_the_moon_and_back_16.webp"],
-  [23, "to_the_moon_and_back_18_2.webp"],
-  [27, "to_the_moon_and_back_20.webp"],
-  [29, "to_the_moon_and_back_22.webp"],
-  [30, "to_the_moon_and_back_23.webp"],
-  [31, "to_the_moon_and_back_24.webp"],
-  [33, "to_the_moon_and_back_26.webp"],
-  [34, "to_the_moon_and_back_25.webp"],
-  [36, "to_the_moon_and_back_27_1.webp"]
-]);
+					// Only blocks listed here will change the image
+					const IMAGE_CHANGES = new Map([
+					[6,  "to_the_moon_and_back_6.webp"],
+					[10, "to_the_moon_and_back_8_2.webp"],
+					[14, "to_the_moon_and_back_12.webp"],
+					[15, "to_the_moon_and_back_10.webp"],
+					[18, "to_the_moon_and_back_14.webp"],
+					[20,  "to_the_moon_and_back_16.webp"],
+					[23, "to_the_moon_and_back_18_2.webp"],
+					[27, "to_the_moon_and_back_20.webp"],
+					[29, "to_the_moon_and_back_22.webp"],
+					[30, "to_the_moon_and_back_23.webp"],
+					[31, "to_the_moon_and_back_24.webp"],
+					[33, "to_the_moon_and_back_26.webp"],
+					[34, "to_the_moon_and_back_25.webp"],
+					[36, "to_the_moon_and_back_27_1.webp"]
+					]);
+					
+					let currentBlockIndex = 0;
 
-/* ====== State & tunables ====== */
-let currentIndex = 0;
-let currentBlockIndex = 0;
+					function flipNext() {
+					  if (currentIndex < flipPages.length) {
+						const currentPage = flipPages[currentIndex];
+						currentPage.classList.add('flipped');
 
-const PAGE_TRANSITION_SEC = 1.0;  // matches your CSS transition
-const FLIP_LEAD_SEC       = 0.45; // start flip a bit before timing so it lands on time
-let squelchAutoFlipTicks  = 0;    // suppress auto-flip right after manual seek
+						setTimeout(() => {
+						  currentPage.style.zIndex = 'auto';
+						}, 500);
 
-/* ====== Helpers ====== */
-function safeTimeForIndex(idx){
-  const a = (idx === 0) ? 0 : flipTimings[idx - 1];
-  const b = (idx < flipTimings.length) ? flipTimings[idx] : (narration.duration || a + 60);
-  // midpoint of current page; cap early so we don't go too deep
-  return Math.min((narration.duration || b), a + Math.min(0.5, (b - a) / 2));
-}
+						if (flipSound) {
+						  flipSound.currentTime = 0;
+						  flipSound.play();
+						}
 
-function targetIndexFromTime(t){
-  const leadT = t + FLIP_LEAD_SEC;
-  let i = 0;
-  while (i < flipTimings.length && leadT >= flipTimings[i]) i++;
-  return i; // 0..flipPages.length
-}
+						currentIndex++;
+						console.log("currentIndex", currentIndex);
+					  }
+					}
 
-/* ====== Visual flips ====== */
-function flipNext(){
-  if (currentIndex >= flipPages.length) return;
-  const p = flipPages[currentIndex];
-  p.classList.add('flipped');
-  setTimeout(()=>{ p.style.zIndex = 'auto'; }, (PAGE_TRANSITION_SEC * 1000)/2);
-  if (flipSound){
-    try { flipSound.currentTime = 0; flipSound.play(); } catch(e){}
-  }
-  currentIndex++;
-}
+					function syncHighlighting() {
+					  const currentTime = narration.currentTime;
 
-function applyFlipState(idx){
-  // Snap all pages to a given state (no audio seeking)
-  for (let i=0; i<flipPages.length; i++){
-    const p = flipPages[i];
-    if (i < idx){ p.classList.add('flipped'); p.style.zIndex = 'auto'; }
-    else        { p.classList.remove('flipped'); p.style.zIndex = '';   }
-  }
-  currentIndex = idx;
-  updateUI();
-}
+					  // Highlight sentences
+					  sentences.forEach(span => {
+						const start = parseFloat(span.dataset.start);
+						const end = parseFloat(span.dataset.end);
+						if (currentTime >= start && currentTime <= end) {
+						  span.classList.add("active");
+						} else {
+						  span.classList.remove("active");
+						}
+					  });
 
-/* ====== Manual navigation (seeks audio + snaps pages) ====== */
-function goToFlipIndex(idx){
-  idx = Math.max(0, Math.min(idx, flipPages.length));
-  narration.currentTime = safeTimeForIndex(idx);
-  applyFlipState(idx);
-  squelchAutoFlipTicks = 2; // let the timeupdate settle first
-  runSyncPass();            // immediate refresh
-}
+					  // Swap text blocks + maybe swap image (sparse)
+					  for (let i = 0; i < blockTimings.length; i++) {
+						if (currentTime >= blockTimings[i].start && currentTime <= blockTimings[i].end) {
+						  if (currentBlockIndex !== i) {
+							if (textBlocks[currentBlockIndex]) {
+							  textBlocks[currentBlockIndex].classList.remove("active");
+							}
+							textBlocks[i].classList.add("active");
+							currentBlockIndex = i;
 
-/* ====== One-pass sync loop ====== */
-function runSyncPass(){
-  const t = narration.currentTime || 0;
+							const newImage = IMAGE_CHANGES.get(currentBlockIndex);
+							if (newImage) {
+							
+							
+							
+							
+							
+							
+							  // Visible page is the one just flipped in
+							  const visiblePageIndex = Math.max(currentIndex , 0);
+							  const currentPage = flipPages[visiblePageIndex];
 
-  // Sentence highlights
-  sentences.forEach(span=>{
-    const s = +span.dataset.start, e = +span.dataset.end;
-    const on = (t >= s && t <= e);
-    if (on !== span.classList.contains('active')){
-      span.classList.toggle('active', on);
-    }
-  });
+							  console.log(
+								"Block index:", currentBlockIndex,
+								"Flip index:", currentIndex,
+								"Visible page index:", visiblePageIndex,
+								"New image:", newImage,
+								"Page ID:", flipPages[visiblePageIndex]?.id
+							  );
 
-  // Text blocks + optional image swap
-  for (let i=0; i<blockTimings.length; i++){
-    const w = blockTimings[i];
-    if (t >= w.start && t <= w.end){
-      if (currentBlockIndex !== i){
-        if (textBlocks[currentBlockIndex]) textBlocks[currentBlockIndex].classList.remove('active');
-        textBlocks[i].classList.add('active');
-        currentBlockIndex = i;
+							  if (currentPage) {
+								const img = currentPage.querySelector(".page-front .full-image img");
+								if (img && !img.src.endsWith(newImage)) {
+								  // Simple swap; plug in your fadeToWhiteSwap here if desired
+								  // fadeToWhiteSwap(currentPage, newImage);
+								  
+								  
+								  img.classList.remove("visible"); img.classList.add("fading"); 
+								  // fade out 
+								  setTimeout(() => { img.src = newImage; // When the new image loads, fade it in 
+								  img.onload = () => { // Ensure the browser has rendered at opacity 0 before fade-in 
+								  setTimeout(() => 
+								  { img.classList.remove("fading"); // Remove 'fading' 
+								  img.classList.add("visible"); // Add 'visible' to trigger the fade-in 
+								  }, 50); }; }, 990);
+								  
+								}
+							  } else {
+								console.warn("No currentPage at index", visiblePageIndex);
+							  }
+							}
+						  }
+						}
+					  }
 
-        const newImage = IMAGE_CHANGES.get(currentBlockIndex);
-        if (newImage){
-          const visiblePageIndex = Math.max(currentIndex, 0);
-          const currentPage = flipPages[visiblePageIndex];
-          const img = currentPage?.querySelector('.page-front .full-image img');
-          if (img && !img.src.endsWith(newImage)){
-            img.classList.remove('visible'); img.classList.add('fading');
-            img.onload = () => {
-              requestAnimationFrame(()=>{
-                img.classList.remove('fading');
-                img.classList.add('visible');
-              });
-            };
-            img.src = newImage;
-          }
-        }
-      }
-      break;
-    }
-  }
+					  // Flip page at correct timing
+					  if (currentIndex < flipTimings.length && currentTime >= flipTimings[currentIndex]) {
+						flipNext();
+					  }
 
-  // Auto flip driven by audio
-  if (squelchAutoFlipTicks > 0){
-    squelchAutoFlipTicks--;
-  } else {
-    const targetIdx = targetIndexFromTime(t);
-    if (targetIdx > currentIndex){
-      flipNext();              // animate forward
-    } else if (targetIdx < currentIndex - 1){
-      applyFlipState(targetIdx); // snap back (no seeking)
-    }
-  }
+					  requestAnimationFrame(syncHighlighting);
+					}
 
-  updateUI();
-}
+					document.body.addEventListener("click", () => {
+					  narration.play();
+					  requestAnimationFrame(syncHighlighting);
+					}, { once: true });
 
-/* ====== Controls wiring ====== */
-const prevBtn      = document.getElementById('prevBtn');
-const playPauseBtn = document.getElementById('playPauseBtn');
-const nextBtn      = document.getElementById('nextBtn');
-const muteBtn      = document.getElementById('muteBtn');
-const restartBtn   = document.getElementById('restartBtn');
-const pageSeek     = document.getElementById('pageSeek');
-const pageLabel    = document.getElementById('pageLabel');
 
-if (pageSeek){
-  pageSeek.max  = String(flipPages.length);
-  pageSeek.step = '1';
-  pageSeek.value = '0';
-  if (pageLabel) pageLabel.textContent = `1/${flipPages.length}`;
-}
-
-function updateUI(){
-  if (pageSeek)  pageSeek.value = String(currentIndex);
-  if (pageLabel) pageLabel.textContent = `${Math.min(currentIndex + 1, flipPages.length)}/${flipPages.length}`;
-  if (playPauseBtn) playPauseBtn.textContent = narration.paused ? '▶' : '⏸';
-  if (muteBtn)      muteBtn.textContent      = narration.muted ? '🔇' : '🔊';
-  if (prevBtn)      prevBtn.disabled         = (currentIndex <= 0);
-  if (nextBtn)      nextBtn.disabled         = (currentIndex >= flipPages.length);
-}
-
-function togglePlay(){ if (narration.paused) narration.play(); else narration.pause(); updateUI(); }
-function nextPage(){ goToFlipIndex(currentIndex + 1); }
-function prevPage(){ goToFlipIndex(currentIndex - 1); }
-function restart(){  goToFlipIndex(0); }
-
-if (pageSeek)     pageSeek.addEventListener('input', ()=> goToFlipIndex(parseInt(pageSeek.value, 10)));
-if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlay);
-if (nextBtn)      nextBtn.addEventListener('click', nextPage);
-if (prevBtn)      prevBtn.addEventListener('click', prevPage);
-if (restartBtn)   restartBtn.addEventListener('click', restart);
-if (muteBtn)      muteBtn.addEventListener('click', ()=>{ narration.muted = !narration.muted; updateUI(); });
-
-document.addEventListener('keydown', (e)=>{
-  if (/input|textarea|select/i.test(e.target?.tagName || '')) return;
-  if (e.code === 'Space'){ e.preventDefault(); togglePlay(); }
-  else if (e.key === 'ArrowRight'){ e.preventDefault(); nextPage(); }
-  else if (e.key === 'ArrowLeft'){ e.preventDefault(); prevPage(); }
-  else if (e.key.toLowerCase() === 'm'){ narration.muted = !narration.muted; updateUI(); }
-  else if (e.key === 'Home'){ e.preventDefault(); restart(); }
-  else if (e.key === 'End'){ e.preventDefault(); goToFlipIndex(flipPages.length); }
-});
-
-/* ====== One loop: driven by audio ====== */
-narration.addEventListener('timeupdate',      runSyncPass);
-narration.addEventListener('seeked',          ()=>{ squelchAutoFlipTicks = 2; runSyncPass(); });
-narration.addEventListener('loadedmetadata',  runSyncPass);
-narration.addEventListener('play',            updateUI);
-narration.addEventListener('pause',           updateUI);
-narration.addEventListener('ended',           updateUI);
-
-// First paint
-updateUI();
-if (!isNaN(narration.duration)) runSyncPass();
-
-/* ====== Auto-hide controls (2s) but show briefly on load ====== */
-(function(){
-  const controlsEl = document.querySelector('.controls');
-  if (!controlsEl) return;
-
-  const HIDE_MS = 2000;
-  let hideTimer = null;
-
-  function hideControls(){ controlsEl.classList.remove('is-visible'); }
-  function showControls(autoHide = true){
-    controlsEl.classList.add('is-visible');
-    if (autoHide){
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(hideControls, HIDE_MS);
-    }
-  }
-
-  // Show briefly on load
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', ()=> showControls(true));
-  } else {
-    showControls(true);
-  }
-
-  // Re-show on activity (mobile-friendly)
-  ['pointerdown','touchstart','click','mousemove','keydown'].forEach(ev=>{
-    document.addEventListener(ev, (e)=>{
-      // If interaction is on the bar, keep it up and reset timer
-      if (controlsEl.contains(e.target)){
-        clearTimeout(hideTimer);
-        controlsEl.classList.add('is-visible');
-        return;
-      }
-      showControls(true);
-    }, { passive: true });
-  });
-
-  // Keep visible while interacting with the bar, then auto-hide again
-  controlsEl.addEventListener('pointerdown', ()=> clearTimeout(hideTimer));
-  controlsEl.addEventListener('pointerup',   ()=> showControls(true));
-  controlsEl.addEventListener('touchstart',  ()=> clearTimeout(hideTimer), { passive:true });
-  controlsEl.addEventListener('touchend',    ()=> showControls(true),      { passive:true });
-
-  // Audio state changes nudge visibility
-  ['play','pause','seeked','loadedmetadata'].forEach(ev=>{
-    narration.addEventListener(ev, ()=> showControls(true));
-  });
-})();
 </script>
+<script>
+  // === Controls ===
+  const prevBtn = document.getElementById('prevBtn');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const muteBtn = document.getElementById('muteBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const pageSeek = document.getElementById('pageSeek');
+  const pageLabel = document.getElementById('pageLabel');
+
+  // Make the slider match your pages (cover state = 0)
+  pageSeek.max = String(flipPages.length);
+  pageSeek.step = "1";
+  pageSeek.value = "0";
+  pageLabel.textContent = `1/${flipPages.length}`;
+
+  // Ensure the RAF loop starts even if user clicks the controls first
+  let loopStarted = false;
+  function startLoopOnce(){
+    if(!loopStarted){
+      requestAnimationFrame(syncHighlighting);
+      loopStarted = true;
+    }
+  }
+
+  // Map currentTime -> how many flips should have happened
+  function indexFromTime(t){
+    let i = 0;
+    while (i < flipTimings.length && t >= flipTimings[i]) i++;
+    return i; // 0..flipPages.length
+  }
+
+  // Apply visual flip state for a given index (0..N)
+  function applyFlipState(idx){
+    for (let i=0;i<flipPages.length;i++){
+      const p = flipPages[i];
+      if (i < idx){
+        p.classList.add('flipped');
+        p.style.zIndex = 'auto';
+      }else{
+        p.classList.remove('flipped');
+        p.style.zIndex = '';
+      }
+    }
+    currentIndex = idx;
+    updateUI();
+  }
+
+  // Jump to a specific page index (discrete)
+  function goToFlipIndex(idx){
+    idx = Math.max(0, Math.min(idx, flipPages.length));
+    let t = 0;
+    if (idx === 0) t = 0;
+    else if (idx <= flipTimings.length) t = flipTimings[idx-1] + 0.01;
+    else t = (narration.duration || 0) - 0.01;
+    narration.currentTime = t;
+    applyFlipState(idx);
+  }
+
+  // Buttons
+  function togglePlay(){
+    startLoopOnce();
+    if (narration.paused){ narration.play(); }
+    else { narration.pause(); }
+    updateUI();
+  }
+  function nextPage(){ goToFlipIndex(currentIndex + 1); }
+  function prevPage(){ goToFlipIndex(currentIndex - 1); }
+  function restart(){ goToFlipIndex(0); }
+
+  // Slider seek (discrete pages)
+  pageSeek.addEventListener('input', ()=>{
+    startLoopOnce();
+    goToFlipIndex(parseInt(pageSeek.value, 10));
+  });
+
+  // Button handlers
+  playPauseBtn.addEventListener('click', togglePlay);
+  nextBtn.addEventListener('click', ()=>{ startLoopOnce(); nextPage(); });
+  prevBtn.addEventListener('click', ()=>{ startLoopOnce(); prevPage(); });
+  restartBtn.addEventListener('click', ()=>{ startLoopOnce(); restart(); });
+  muteBtn.addEventListener('click', ()=>{ narration.muted = !narration.muted; updateUI(); });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e)=>{
+    if (e.target && (/input|textarea|select/i).test(e.target.tagName)) return;
+    if (e.code === 'Space'){ e.preventDefault(); togglePlay(); }
+    else if (e.key === 'ArrowRight'){ e.preventDefault(); startLoopOnce(); nextPage(); }
+    else if (e.key === 'ArrowLeft'){ e.preventDefault(); startLoopOnce(); prevPage(); }
+    else if (e.key.toLowerCase() === 'm'){ narration.muted = !narration.muted; updateUI(); }
+    else if (e.key === 'Home'){ e.preventDefault(); startLoopOnce(); restart(); }
+    else if (e.key === 'End'){ e.preventDefault(); goToFlipIndex(flipPages.length); }
+  });
+
+  // Keep UI synced with audio progress
+  function updateUI(){
+    // Update page slider/label from currentIndex
+    pageSeek.value = String(currentIndex);
+    const displayPage = Math.min(currentIndex + 1, flipPages.length);
+    pageLabel.textContent = `${displayPage}/${flipPages.length}`;
+
+    // Buttons state/icons
+    playPauseBtn.textContent = narration.paused ? '▶' : '⏸';
+    muteBtn.textContent = narration.muted ? '🔇' : '🔊';
+    prevBtn.disabled = (currentIndex <= 0);
+    nextBtn.disabled = (currentIndex >= flipPages.length);
+  }
+
+  // When audio time changes (playback or manual seek), reflect page & UI
+  narration.addEventListener('timeupdate', ()=>{
+    const idx = indexFromTime(narration.currentTime || 0);
+    if (idx !== currentIndex){
+      // Visually catch up if a page threshold was crossed
+      applyFlipState(idx);
+    }else{
+      updateUI();
+    }
+  });
+  narration.addEventListener('play', updateUI);
+  narration.addEventListener('pause', updateUI);
+  narration.addEventListener('loadedmetadata', updateUI);
+  narration.addEventListener('ended', ()=>{ updateUI(); });
+
+  // Initial paint
+  updateUI();
+  
+
+
+  // === Show/Hide controls on demand ===
+const controlsEl = document.querySelector('.controls');
+if (controlsEl) {
+  let hideTimer = null;
+  const HIDE_MS = 3000;
+
+  function showControls(autoHide = true) {
+    controlsEl.classList.add('is-visible');
+    if (autoHide) {
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        controlsEl.classList.remove('is-visible');
+      }, HIDE_MS);
+    }
+  }
+
+  function ping() {
+    // If visible, extend the auto-hide timer on interaction
+    if (controlsEl.classList.contains('is-visible')) showControls(true);
+  }
+
+  // Show when user clicks anywhere outside the controls
+  document.addEventListener('click', (e) => {
+    if (controlsEl.contains(e.target)) return; // ignore clicks on controls
+    showControls(true);
+  });
+
+  // Keep visible while interacting with controls
+  controlsEl.addEventListener('pointerdown', () => showControls(false));
+  controlsEl.addEventListener('pointerup',   () => showControls(true));
+  controlsEl.addEventListener('mouseenter',  () => showControls(false));
+  controlsEl.addEventListener('mouseleave',  () => showControls(true));
+
+  // Nudge the timer on movement/keys/touches
+  ['mousemove','touchstart','keydown'].forEach(ev =>
+    document.addEventListener(ev, ping, { passive: true })
+  );
+
+  // Start hidden (no call to showControls on load)
+}
+
+</script>
+
+
+
 
   </body>
 </html>
