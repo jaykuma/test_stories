@@ -1104,13 +1104,14 @@
 
 					function syncHighlighting() {
 					  const currentTime = narration.currentTime;
-
+						console.log("current time is ", currentTime);
 					  // Highlight sentences
 					  sentences.forEach(span => {
 						const start = parseFloat(span.dataset.start);
 						const end = parseFloat(span.dataset.end);
 						if (currentTime >= start && currentTime <= end) {
 						  span.classList.add("active");
+						  console.log("Activating span",span);
 						} else {
 						  span.classList.remove("active");
 						}
@@ -1122,8 +1123,10 @@
 						  if (currentBlockIndex !== i) {
 							if (textBlocks[currentBlockIndex]) {
 							  textBlocks[currentBlockIndex].classList.remove("active");
-							}
+							}							
 							textBlocks[i].classList.add("active");
+						  console.log("activating block", textBlocks[i]);
+
 							currentBlockIndex = i;
 
 							const newImage = IMAGE_CHANGES.get(currentBlockIndex);
@@ -1160,6 +1163,8 @@
 								  setTimeout(() => 
 								  { img.classList.remove("fading"); // Remove 'fading' 
 								  img.classList.add("visible"); // Add 'visible' to trigger the fade-in 
+						  		  console.log("showing image ", img);
+
 								  }, 50); }; }, 990);
 								  
 								}
@@ -1176,7 +1181,7 @@
 						flipNext();
 					  }
 
-					  requestAnimationFrame(syncHighlighting);
+					  //requestAnimationFrame(syncHighlighting);
 					}
 
 					document.body.addEventListener("click", () => {
@@ -1257,7 +1262,8 @@
   function restart(){ goToFlipIndex(0); }
 
   // Slider seek (discrete pages)
-  pageSeek.addEventListener('input', ()=>{
+  pageSeek.addEventListener('input', (value)=>{
+	console.log("Seek value",value)
     startLoopOnce();
     goToFlipIndex(parseInt(pageSeek.value, 10));
   });
@@ -1292,6 +1298,7 @@
     muteBtn.textContent = narration.muted ? '🔇' : '🔊';
     prevBtn.disabled = (currentIndex <= 0);
     nextBtn.disabled = (currentIndex >= flipPages.length);
+	requestAnimationFrame(syncHighlighting);
   }
 
   // When audio time changes (playback or manual seek), reflect page & UI
